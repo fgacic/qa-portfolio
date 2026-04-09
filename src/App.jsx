@@ -1,12 +1,11 @@
-function App () {
+function App() {
   return (
     <main className="screen">
       <div className="content">
-        <h1 className="title">Stillness speaks loudest</h1>
-        <p className="subtitle">A tiny centered moment.</p>
+        <h1 className="title">Bula gej</h1>
       </div>
     </main>
-  )
+  );
 }
 
-export default App
+export default App;
