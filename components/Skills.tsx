@@ -4,6 +4,7 @@ import { motion } from 'motion/react'
 
 const SKILLS = [
   { name: 'Playwright', category: 'E2E Testing', accent: '#a855f7' },
+  { name: 'Cypress', category: 'E2E Testing', accent: '#38bdf8' },
   { name: 'k6', category: 'Load & Performance', accent: '#38bdf8' },
   { name: 'Postman / Bruno', category: 'API Testing', accent: '#6366f1' },
   { name: 'TypeScript', category: 'Language', accent: '#818cf8' },
