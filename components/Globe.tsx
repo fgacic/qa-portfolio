@@ -10,11 +10,21 @@ const GEOJSON_HIGH_URL = '/data/countries-50m.geo.json'
 const ROTATION_DEG_PER_SEC = 6
 const GLOBE_CENTER: [number, number] = [10, 20]
 const GLOBE_ZOOM = 2
+const MY_LOCATION_ISO = 'HRV'
+const MY_LOCATION_LABEL = 'My location'
+const MY_LOCATION_COORDS: [number, number] = [16.4402, 43.5081]
+const MY_LOCATION_ACCENT = '#e8e6f0'
 const COUNTRIES_LOW_SOURCE = 'countries-low'
 const COUNTRIES_HIGH_SOURCE = 'countries-high'
 const FILL_ALL_LAYER = 'countries-fill-all'
 const FILL_HIGHLIGHT_LAYER = 'countries-fill-highlight'
+const FILL_HOME_LAYER = 'countries-fill-home'
 const OUTLINE_HIGHLIGHT_LAYER = 'countries-outline-highlight'
+const OUTLINE_HOME_LAYER = 'countries-outline-home'
+const HOME_MARKER_SOURCE = 'home-marker'
+const HOME_MARKER_GLOW_LAYER = 'home-marker-glow'
+const HOME_MARKER_DOT_LAYER = 'home-marker-dot'
+const HOVER_HIT_RADIUS = 32
 
 export type ProjectCountry = {
   iso: string
@@ -115,6 +125,18 @@ export default function Globe({
       highlightCases.push('transparent')
       const highlightExpr = highlightCases as maplibregl.ExpressionSpecification
 
+      const showHomePopup = (map: import('maplibre-gl').Map, lngLat: import('maplibre-gl').LngLatLike) => {
+        popup
+          .setLngLat(lngLat)
+          .setHTML(
+            `<div style="padding:0.35rem 0.6rem;text-align:center;">
+              <div style="font-size:0.62rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:rgba(232,230,240,0.55);margin-bottom:0.15rem;">Based in</div>
+              <div style="font-size:0.8rem;font-weight:600;color:${MY_LOCATION_ACCENT};">${MY_LOCATION_LABEL}</div>
+            </div>`,
+          )
+          .addTo(map)
+      }
+
       const map = new maplibregl.Map({
         container: containerRef.current,
         style: {
@@ -136,7 +158,7 @@ export default function Globe({
         interactive: true,
         dragRotate: !isMobile,
         dragPan: !isMobile,
-        scrollZoom: false,
+        scrollZoom: true,
         touchZoomRotate: !isMobile,
         keyboard: false,
         doubleClickZoom: false,
@@ -214,6 +236,101 @@ export default function Globe({
           },
         })
 
+        map.addLayer({
+          id: FILL_HOME_LAYER,
+          type: 'fill',
+          source: COUNTRIES_HIGH_SOURCE,
+          filter: ['==', ['get', ISO_KEY], MY_LOCATION_ISO],
+          paint: {
+            'fill-color': MY_LOCATION_ACCENT,
+            'fill-opacity': [
+              'case',
+              ['boolean', ['feature-state', 'hover'], false],
+              0.35,
+              0.18,
+            ],
+            'fill-antialias': true,
+          },
+        })
+
+        map.addLayer({
+          id: OUTLINE_HOME_LAYER,
+          type: 'line',
+          source: COUNTRIES_HIGH_SOURCE,
+          filter: ['==', ['get', ISO_KEY], MY_LOCATION_ISO],
+          paint: {
+            'line-color': MY_LOCATION_ACCENT,
+            'line-width': 1.5,
+            'line-opacity': 0.85,
+          },
+        })
+
+        map.addSource(HOME_MARKER_SOURCE, {
+          type: 'geojson',
+          data: {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: MY_LOCATION_COORDS },
+            properties: { id: 'home' },
+          },
+          promoteId: 'id',
+        })
+
+        map.addLayer({
+          id: HOME_MARKER_GLOW_LAYER,
+          type: 'circle',
+          source: HOME_MARKER_SOURCE,
+          layout: {
+            'circle-pitch-alignment': 'map',
+          },
+          paint: {
+            'circle-radius': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              0,
+              10,
+              4,
+              16,
+              8,
+              22,
+            ],
+            'circle-color': MY_LOCATION_ACCENT,
+            'circle-opacity': [
+              'case',
+              ['boolean', ['feature-state', 'hover'], false],
+              0.35,
+              0.22,
+            ],
+            'circle-blur': 0.55,
+          },
+        })
+
+        map.addLayer({
+          id: HOME_MARKER_DOT_LAYER,
+          type: 'circle',
+          source: HOME_MARKER_SOURCE,
+          layout: {
+            'circle-pitch-alignment': 'map',
+          },
+          paint: {
+            'circle-radius': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              0,
+              4,
+              4,
+              7,
+              8,
+              10,
+            ],
+            'circle-color': MY_LOCATION_ACCENT,
+            'circle-opacity': 1,
+            'circle-stroke-width': 2,
+            'circle-stroke-color': 'rgba(10,10,12,0.9)',
+          },
+        })
+
         if (externalHoveredIsoRef.current) {
           map.setFeatureState(
             { source: COUNTRIES_HIGH_SOURCE, id: externalHoveredIsoRef.current },
@@ -223,62 +340,134 @@ export default function Globe({
 
         map.resize()
 
-        if (!isMobile) {
-          map.on('mousemove', FILL_HIGHLIGHT_LAYER, (e) => {
-            if (!e.features || e.features.length === 0) return
-            const feature = e.features[0]
-            const iso = feature.properties?.[ISO_KEY] as string | undefined
-            if (!iso) return
-            const info = countryMap.get(iso)
-            if (!info) return
-
-            map.getCanvas().style.cursor = 'pointer'
-
-            if (hoveredFeatureIdRef.current && hoveredFeatureIdRef.current !== iso) {
-              map.setFeatureState(
-                { source: COUNTRIES_HIGH_SOURCE, id: hoveredFeatureIdRef.current },
-                { hover: false },
-              )
-            }
-            hoveredFeatureIdRef.current = iso
+        const clearProjectHover = () => {
+          if (
+            hoveredFeatureIdRef.current &&
+            hoveredFeatureIdRef.current !== externalHoveredIsoRef.current
+          ) {
             map.setFeatureState(
-              { source: COUNTRIES_HIGH_SOURCE, id: iso },
-              { hover: true },
+              { source: COUNTRIES_HIGH_SOURCE, id: hoveredFeatureIdRef.current },
+              { hover: false },
             )
+          }
+          hoveredFeatureIdRef.current = null
+          onCountryHoverRef.current(null)
+        }
 
-            popup
-              .setLngLat(e.lngLat)
-              .setHTML(
-                `<div style="font-size:0.78rem;font-weight:500;color:#e8e6f0;padding:0.25rem 0.5rem;">${info.projectName}</div>`,
-              )
-              .addTo(map)
+        const setHomeHover = (active: boolean) => {
+          map.setFeatureState(
+            { source: COUNTRIES_HIGH_SOURCE, id: MY_LOCATION_ISO },
+            { hover: active },
+          )
+          map.setFeatureState(
+            { source: HOME_MARKER_SOURCE, id: 'home' },
+            { hover: active },
+          )
+        }
 
-            onCountryHoverRef.current(info.projectId)
+        const interactiveLayers = [
+          HOME_MARKER_DOT_LAYER,
+          HOME_MARKER_GLOW_LAYER,
+          FILL_HOME_LAYER,
+          FILL_HIGHLIGHT_LAYER,
+        ]
+
+        const queryInteractiveFeatures = (point: import('maplibre-gl').PointLike) =>
+          map.queryRenderedFeatures(point, {
+            layers: interactiveLayers,
+            radius: HOVER_HIT_RADIUS,
           })
 
-          map.on('mouseleave', FILL_HIGHLIGHT_LAYER, () => {
-            map.getCanvas().style.cursor = ''
+        type InteractionPick =
+          | { kind: 'home' }
+          | { kind: 'project'; iso: string; info: ProjectCountry }
+
+        const pickInteraction = (
+          features: import('maplibre-gl').MapGeoJSONFeature[],
+        ): InteractionPick | null => {
+          for (const feature of features) {
+            const layerId = feature.layer.id
             if (
-              hoveredFeatureIdRef.current &&
-              hoveredFeatureIdRef.current !== externalHoveredIsoRef.current
+              layerId === HOME_MARKER_DOT_LAYER ||
+              layerId === HOME_MARKER_GLOW_LAYER ||
+              layerId === FILL_HOME_LAYER
             ) {
-              map.setFeatureState(
-                { source: COUNTRIES_HIGH_SOURCE, id: hoveredFeatureIdRef.current },
-                { hover: false },
-              )
+              return { kind: 'home' }
             }
-            hoveredFeatureIdRef.current = null
-            popup.remove()
-            onCountryHoverRef.current(null)
+            if (layerId === FILL_HIGHLIGHT_LAYER) {
+              const iso = feature.properties?.[ISO_KEY] as string | undefined
+              if (!iso) continue
+              const info = countryMap.get(iso)
+              if (info) return { kind: 'project', iso, info }
+            }
+          }
+          return null
+        }
+
+        const clearAllHover = () => {
+          map.getCanvas().style.cursor = ''
+          clearProjectHover()
+          setHomeHover(false)
+          popup.remove()
+        }
+
+        const applyProjectHover = (
+          iso: string,
+          info: ProjectCountry,
+          lngLat: import('maplibre-gl').LngLatLike,
+        ) => {
+          setHomeHover(false)
+          map.getCanvas().style.cursor = 'pointer'
+
+          if (hoveredFeatureIdRef.current && hoveredFeatureIdRef.current !== iso) {
+            map.setFeatureState(
+              { source: COUNTRIES_HIGH_SOURCE, id: hoveredFeatureIdRef.current },
+              { hover: false },
+            )
+          }
+          hoveredFeatureIdRef.current = iso
+          map.setFeatureState({ source: COUNTRIES_HIGH_SOURCE, id: iso }, { hover: true })
+
+          popup
+            .setLngLat(lngLat)
+            .setHTML(
+              `<div style="font-size:0.78rem;font-weight:500;color:#e8e6f0;padding:0.25rem 0.5rem;">${info.projectName}</div>`,
+            )
+            .addTo(map)
+
+          onCountryHoverRef.current(info.projectId)
+        }
+
+        const applyHomeHover = (lngLat: import('maplibre-gl').LngLatLike) => {
+          clearProjectHover()
+          map.getCanvas().style.cursor = 'default'
+          setHomeHover(true)
+          showHomePopup(map, lngLat)
+        }
+
+        if (!isMobile) {
+          map.on('mousemove', (e) => {
+            const pick = pickInteraction(queryInteractiveFeatures(e.point))
+            if (!pick) {
+              clearAllHover()
+              return
+            }
+            if (pick.kind === 'home') {
+              applyHomeHover(e.lngLat)
+              return
+            }
+            applyProjectHover(pick.iso, pick.info, e.lngLat)
           })
         }
 
-        map.on('click', FILL_HIGHLIGHT_LAYER, (e) => {
-          if (!e.features || e.features.length === 0) return
-          const iso = e.features[0].properties?.[ISO_KEY] as string | undefined
-          if (!iso) return
-          const info = countryMap.get(iso)
-          if (info) onCountryClickRef.current(info.projectId)
+        map.on('click', (e) => {
+          const pick = pickInteraction(queryInteractiveFeatures(e.point))
+          if (!pick) return
+          if (pick.kind === 'home') {
+            showHomePopup(map, e.lngLat)
+            return
+          }
+          onCountryClickRef.current(pick.info.projectId)
         })
 
         const tick = (t: number) => {
