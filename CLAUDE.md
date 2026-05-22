@@ -28,10 +28,16 @@ k6 run k6/load.js --env BASE_URL=https://fgacic.dev  # Manual only, not CI
 **API routes** (`app/api/`):
 - `GET /api/health` — health check
 - `POST /api/contact` — validates input, rate-limits (3/hour per IP, in-memory), stores to SQLite
-- `GET /api/contact` — admin endpoint (Bearer token via `ADMIN_TOKEN` env var)
+- `GET /api/contact` — admin endpoint, gated by Cloudflare Access JWT
 - `GET /api/projects` — project list from `lib/projects.ts`
+- `PATCH /api/admin/submissions/[id]` — mark submission read; CF Access gated
+- `DELETE /api/admin/submissions/[id]` — soft-delete submission; CF Access gated
 
-**Data layer** — SQLite via `better-sqlite3` (WAL mode). DB path: `$DATA_DIR/db.sqlite` (default `./data/`). Schema initialised on first start in `lib/db.ts`. No migrations — dev-only portfolio.
+**Admin Dashboard** — `/admin` route gated by Cloudflare Access (email OTP / identity provider). CF Access intercepts unauthenticated requests at the edge and redirects to the login flow before the app is ever reached. The layout and page both verify the JWT for defense in depth. Signed-in email is shown in the top bar; sign-out points to `/cdn-cgi/access/logout`.
+
+Soft-delete semantics: deleting a submission sets `deleted_at` in SQLite; the row is excluded from the default query but retained in the database. Pass `{ includeDeleted: true }` to `getAllSubmissions()` to include deleted rows.
+
+**Data layer** — SQLite via `better-sqlite3` (WAL mode). DB path: `$DATA_DIR/db.sqlite` (default `./data/`). Schema initialised on first start in `lib/db.ts`. Additive columns (`read_at`, `deleted_at`) added via `ALTER TABLE … ADD COLUMN` wrapped in try/catch for idempotency. No migrations — dev-only portfolio.
 
 **Rate limiting** — in-memory map in `lib/rateLimit.ts`; resets on restart (intentional).
 
@@ -70,8 +76,10 @@ Playwright config: 2 retries in CI, 1 worker (sequential), HTML report → `play
 | Variable | Purpose | Default |
 |----------|---------|---------|
 | `DATA_DIR` | SQLite DB + data files location | `./data` |
-| `ADMIN_TOKEN` | Bearer token for `GET /api/contact` | `dev-token` |
 | `BASE_URL` | Used by Playwright and k6 | `http://localhost:3000` |
 | `RESEND_API_KEY` | Resend API key for contact email notifications | *(required in prod)* |
 | `NOTIFY_EMAIL` | Address that receives contact notifications | `filip.gacic98@gmail.com` |
 | `FROM_EMAIL` | Sender address (must be a verified Resend domain) | `contact@fgacic.dev` |
+| `CF_ACCESS_TEAM_DOMAIN` | Cloudflare Access team domain (e.g. `myteam.cloudflareaccess.com`) | *(required in prod)* |
+| `CF_ACCESS_AUD` | Cloudflare Access application audience tag | *(required in prod)* |
+| `ADMIN_DEV_BYPASS` | Skip CF Access JWT check in non-production environments | `false` |

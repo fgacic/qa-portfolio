@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server'
 import { insertSubmission, getAllSubmissions, type Submission } from '@/lib/db'
 import { checkRateLimit } from '@/lib/rateLimit'
 import { sendContactNotification } from '@/lib/email'
+import { requireCfAccess } from '@/lib/cfAccess'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -37,7 +38,7 @@ export async function POST(req: NextRequest) {
   }
 
   const id = Date.now().toString(36) + Math.random().toString(36).slice(2)
-  const submission: Submission = {
+  const submission: Omit<Submission, 'readAt' | 'deletedAt'> = {
     id, name: body.name.trim(), email: body.email.trim(),
     message: body.message.trim(), createdAt: new Date().toISOString(), ip,
   }
@@ -52,11 +53,8 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  const adminToken = process.env.ADMIN_TOKEN ?? 'dev-token'
-  const auth = req.headers.get('authorization') ?? ''
-  if (auth !== `Bearer ${adminToken}`) {
-    return Response.json({ error: 'unauthorized' }, { status: 401 })
-  }
+  const authResult = await requireCfAccess(req)
+  if (authResult instanceof Response) return authResult
   const submissions = getAllSubmissions()
   return Response.json({ submissions })
 }

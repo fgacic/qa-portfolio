@@ -58,21 +58,23 @@ test.describe('API — POST /api/contact', () => {
   })
 })
 
-test.describe('API — GET /api/contact', () => {
-  test('returns 401 without Authorization header', async ({ request }) => {
+// Auth-gating tests assume the server is running without ADMIN_DEV_BYPASS active.
+// `yarn start` (production build) sets NODE_ENV=production which disables the bypass
+// regardless of the env var, so CI is always covered. Skip locally when bypassing.
+const skipIfBypass = process.env.ADMIN_DEV_BYPASS === 'true'
+
+test.describe('API — GET /api/contact (CF Access gated)', () => {
+  test.skip(skipIfBypass, 'ADMIN_DEV_BYPASS active — auth bypass enabled')
+
+  test('returns 401 without Cf-Access-Jwt-Assertion header', async ({ request }) => {
     const res = await request.get('/api/contact')
     expect(res.status()).toBe(401)
   })
 
-  test('returns 401 with wrong token', async ({ request }) => {
-    const res = await request.get('/api/contact', { headers: { Authorization: 'Bearer wrong-token' } })
+  test('returns 401 with invalid JWT', async ({ request }) => {
+    const res = await request.get('/api/contact', {
+      headers: { 'Cf-Access-Jwt-Assertion': 'not.a.valid.jwt' },
+    })
     expect(res.status()).toBe(401)
-  })
-
-  test('returns 200 with correct token', async ({ request }) => {
-    const res = await request.get('/api/contact', { headers: { Authorization: 'Bearer dev-token' } })
-    expect(res.status()).toBe(200)
-    const body = await res.json()
-    expect(Array.isArray(body.submissions)).toBe(true)
   })
 })

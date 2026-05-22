@@ -282,10 +282,8 @@ export default function Globe({
           id: HOME_MARKER_GLOW_LAYER,
           type: 'circle',
           source: HOME_MARKER_SOURCE,
-          layout: {
-            'circle-pitch-alignment': 'map',
-          },
           paint: {
+            'circle-pitch-alignment': 'map',
             'circle-radius': [
               'interpolate',
               ['linear'],
@@ -312,10 +310,8 @@ export default function Globe({
           id: HOME_MARKER_DOT_LAYER,
           type: 'circle',
           source: HOME_MARKER_SOURCE,
-          layout: {
-            'circle-pitch-alignment': 'map',
-          },
           paint: {
+            'circle-pitch-alignment': 'map',
             'circle-radius': [
               'interpolate',
               ['linear'],
