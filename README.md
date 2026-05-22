@@ -1,4 +1,4 @@
-# fgacic.dev — QA Engineer Portfolio
+# fgacic.com — QA Engineer Portfolio
 
 > **The repo is the portfolio.** Anyone reading this is looking at the same artefacts I produce at work: a production-grade CI pipeline, three test disciplines, and a deployment strategy I own end-to-end.
 
@@ -132,7 +132,7 @@ cd tests && npx playwright test
 k6 run k6/smoke.js --env BASE_URL=http://localhost:3000
 
 # k6 load — run deliberately against live URL only
-k6 run k6/load.js --env BASE_URL=https://fgacic.dev
+k6 run k6/load.js --env BASE_URL=https://fgacic.com
 ```
 
 ---

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-**fgacic.dev** — QA Engineer portfolio site built with Next.js 15 App Router + TypeScript + Tailwind CSS v4. The repo itself demonstrates production-grade testing: Playwright (E2E + API), k6 (load), and a full CI/CD pipeline.
+**fgacic.com** — QA Engineer portfolio site built with Next.js 15 App Router + TypeScript + Tailwind CSS v4. The repo itself demonstrates production-grade testing: Playwright (E2E + API), k6 (load), and a full CI/CD pipeline.
 
 ## Commands
 
@@ -18,7 +18,7 @@ yarn lint             # ESLint
 cd tests && npx playwright test                  # All E2E + API tests
 cd tests && npx playwright test e2e/hero.spec.ts # Single spec file
 k6 run k6/smoke.js --env BASE_URL=http://localhost:3000
-k6 run k6/load.js --env BASE_URL=https://fgacic.dev  # Manual only, not CI
+k6 run k6/load.js --env BASE_URL=https://fgacic.com  # Manual only, not CI
 ```
 
 ## Architecture
@@ -79,7 +79,7 @@ Playwright config: 2 retries in CI, 1 worker (sequential), HTML report → `play
 | `BASE_URL` | Used by Playwright and k6 | `http://localhost:3000` |
 | `RESEND_API_KEY` | Resend API key for contact email notifications | *(required in prod)* |
 | `NOTIFY_EMAIL` | Address that receives contact notifications | `filip.gacic98@gmail.com` |
-| `FROM_EMAIL` | Sender address (must be a verified Resend domain) | `contact@fgacic.dev` |
+| `FROM_EMAIL` | Sender address (must be a verified Resend domain) | `contact@fgacic.com` |
 | `CF_ACCESS_TEAM_DOMAIN` | Cloudflare Access team domain (e.g. `myteam.cloudflareaccess.com`) | *(required in prod)* |
 | `CF_ACCESS_AUD` | Cloudflare Access application audience tag | *(required in prod)* |
 | `ADMIN_DEV_BYPASS` | Skip CF Access JWT check in non-production environments | `false` |

@@ -10,7 +10,7 @@ if (!process.env.RESEND_API_KEY) {
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL ?? 'filip.gacic98@gmail.com'
-const FROM_EMAIL = process.env.FROM_EMAIL ?? 'contact@fgacic.dev'
+const FROM_EMAIL = process.env.FROM_EMAIL ?? 'contact@fgacic.com'
 
 export async function sendContactNotification(params: {
   name: string
@@ -18,8 +18,8 @@ export async function sendContactNotification(params: {
   message: string
   id: string
 }) {
-  await resend.emails.send({
-    from: `fgacic.dev <${FROM_EMAIL}>`,
+  const { error } = await resend.emails.send({
+    from: `fgacic.com <${FROM_EMAIL}>`,
     to: NOTIFY_EMAIL,
     subject: `New contact from ${params.name}`,
     text: [
@@ -30,4 +30,5 @@ export async function sendContactNotification(params: {
       params.message,
     ].join('\n'),
   })
+  if (error) throw new Error(`Resend: ${error.message}`)
 }
