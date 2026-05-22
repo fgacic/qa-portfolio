@@ -33,12 +33,13 @@ body {
   min-height: 100%;
   font-family: var(--font-sans), system-ui, sans-serif;
   color: var(--text);
-  background: radial-gradient(
-      ellipse 120% 80% at 50% -20%,
-      rgba(99, 102, 241, 0.12),
-      transparent 55%
-    ),
-    linear-gradient(165deg, var(--bg-deep) 0%, var(--bg-mid) 65%, #0c0c10 100%);
+  background-color: var(--bg-deep);
+  background-image:
+    radial-gradient(ellipse 110% 80% at 18% 8%, rgba(99, 102, 241, 0.16), transparent 70%),
+    radial-gradient(ellipse 95% 75% at 88% 38%, rgba(168, 85, 247, 0.11), transparent 72%),
+    radial-gradient(ellipse 100% 80% at 50% 95%, rgba(56, 189, 248, 0.09), transparent 72%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

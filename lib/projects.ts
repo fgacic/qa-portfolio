@@ -17,7 +17,7 @@ export const PROJECTS: Project[] = [
     displayUrl: 'sphere.market/beam',
     description:
       'NFT marketplace on the BEAM blockchain. Assisted QA across trading flows, wallet connections, smart contract interactions, and high-concurrency auction mechanics.',
-    tags: ['Web3', 'Playwright', 'API testing'],
+    tags: ['Web3', 'Playwright', 'Cypress'],
     accent: '#818cf8',
     countries: ['USA'],
   },
@@ -28,7 +28,7 @@ export const PROJECTS: Project[] = [
     displayUrl: 'eigenhuis.nl',
     description:
       "The Netherlands' leading home ownership advisory platform. End-to-end testing of mortgage calculators, property search, multi-step advice flows, and accessibility compliance.",
-    tags: ['E2E', 'Accessibility', 'Multi-locale'],
+    tags: ['E2E', 'Accessibility', 'Playwright'],
     accent: '#fb923c',
     countries: ['NLD'],
   },
