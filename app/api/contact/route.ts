@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server'
 import { insertSubmission, getAllSubmissions, type Submission } from '@/lib/db'
 import { checkRateLimit } from '@/lib/rateLimit'
+import { sendContactNotification } from '@/lib/email'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -42,6 +43,10 @@ export async function POST(req: NextRequest) {
   }
 
   insertSubmission(submission)
+
+  sendContactNotification({ name: submission.name, email: submission.email, message: submission.message, id }).catch(
+    (err) => console.error('[email] notification failed:', err)
+  )
 
   return Response.json({ ok: true, id })
 }

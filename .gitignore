@@ -18,6 +18,8 @@ lerna-debug.log*
 
 # Local environment files
 *.local
+.env
+TODO.md
 
 # Editor directories and files
 .vscode/*

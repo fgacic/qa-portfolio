@@ -72,3 +72,6 @@ Playwright config: 2 retries in CI, 1 worker (sequential), HTML report → `play
 | `DATA_DIR` | SQLite DB + data files location | `./data` |
 | `ADMIN_TOKEN` | Bearer token for `GET /api/contact` | `dev-token` |
 | `BASE_URL` | Used by Playwright and k6 | `http://localhost:3000` |
+| `RESEND_API_KEY` | Resend API key for contact email notifications | *(required in prod)* |
+| `NOTIFY_EMAIL` | Address that receives contact notifications | `filip.gacic98@gmail.com` |
+| `FROM_EMAIL` | Sender address (must be a verified Resend domain) | `contact@fgacic.dev` |
