@@ -6,6 +6,7 @@ export interface Project {
   description: string
   tags: string[]
   accent: string
+  countries: string[]
 }
 
 export const PROJECTS: Project[] = [
@@ -18,6 +19,7 @@ export const PROJECTS: Project[] = [
       'NFT marketplace on the BEAM blockchain. Assisted QA across trading flows, wallet connections, smart contract interactions, and high-concurrency auction mechanics.',
     tags: ['Web3', 'Playwright', 'API testing'],
     accent: '#818cf8',
+    countries: ['USA'],
   },
   {
     name: 'Eigen Huis',
@@ -28,6 +30,7 @@ export const PROJECTS: Project[] = [
       "The Netherlands' leading home ownership advisory platform. End-to-end testing of mortgage calculators, property search, multi-step advice flows, and accessibility compliance.",
     tags: ['E2E', 'Accessibility', 'Multi-locale'],
     accent: '#fb923c',
+    countries: ['NLD'],
   },
   {
     name: 'Ramboll',
@@ -38,5 +41,6 @@ export const PROJECTS: Project[] = [
       'Global engineering and sustainability consultancy. QA across CMS-driven content, multi-region deployments, complex form workflows, and performance regression testing.',
     tags: ['CMS', 'Performance', 'Multi-region'],
     accent: '#34d399',
+    countries: ['DNK'],
   },
 ]

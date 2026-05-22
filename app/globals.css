@@ -200,6 +200,52 @@ body {
 }
 
 
+/* ─── Work / Globe ────────────────────────────────────── */
+
+.work-section {
+  max-width: 80rem;
+}
+
+.work-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.work-globe {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  order: -1;
+}
+
+@media (min-width: 1024px) {
+  .work-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 600px;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .work-globe {
+    order: 0;
+    position: sticky;
+    top: 25vh;
+  }
+}
+
+.globe-popup .maplibregl-popup-content {
+  background: rgba(18, 18, 26, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0.5rem;
+  padding: 0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.globe-popup .maplibregl-popup-tip {
+  display: none;
+}
+
 /* ─── Reduced motion ─────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
