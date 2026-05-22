@@ -24,7 +24,8 @@ const OUTLINE_HOME_LAYER = 'countries-outline-home'
 const HOME_MARKER_SOURCE = 'home-marker'
 const HOME_MARKER_GLOW_LAYER = 'home-marker-glow'
 const HOME_MARKER_DOT_LAYER = 'home-marker-dot'
-const HOVER_HIT_RADIUS = 32
+const HIT_PROJECT_LAYER = 'countries-hit-project'
+const HIT_HOME_LAYER = 'countries-hit-home'
 
 export type ProjectCountry = {
   iso: string
@@ -112,6 +113,7 @@ export default function Globe({
     if (!shouldMount || !containerRef.current) return
     let cancelled = false
     let cleanup: (() => void) | null = null
+    let hoverClearTimer: ReturnType<typeof setTimeout> | null = null
 
     ;(async () => {
       const maplibregl = (await import('maplibre-gl')).default
@@ -180,6 +182,7 @@ export default function Globe({
         map.addSource(COUNTRIES_LOW_SOURCE, {
           type: 'geojson',
           data: GEOJSON_LOW_URL,
+          promoteId: ISO_KEY,
         })
 
         map.addSource(COUNTRIES_HIGH_SOURCE, {
@@ -331,6 +334,32 @@ export default function Globe({
           },
         })
 
+        map.addLayer({
+          id: HIT_PROJECT_LAYER,
+          type: 'fill',
+          source: COUNTRIES_LOW_SOURCE,
+          filter: [
+            'in',
+            ['get', ISO_KEY],
+            ['literal', Array.from(countryMap.keys())],
+          ],
+          paint: {
+            'fill-color': '#000',
+            'fill-opacity': 0.01,
+          },
+        })
+
+        map.addLayer({
+          id: HIT_HOME_LAYER,
+          type: 'fill',
+          source: COUNTRIES_LOW_SOURCE,
+          filter: ['==', ['get', ISO_KEY], MY_LOCATION_ISO],
+          paint: {
+            'fill-color': '#000',
+            'fill-opacity': 0.01,
+          },
+        })
+
         if (externalHoveredIsoRef.current) {
           map.setFeatureState(
             { source: COUNTRIES_HIGH_SOURCE, id: externalHoveredIsoRef.current },
@@ -365,50 +394,26 @@ export default function Globe({
           )
         }
 
-        const interactiveLayers = [
-          HOME_MARKER_DOT_LAYER,
-          HOME_MARKER_GLOW_LAYER,
-          FILL_HOME_LAYER,
-          FILL_HIGHLIGHT_LAYER,
-        ]
-
-        const queryInteractiveFeatures = (point: import('maplibre-gl').PointLike) =>
-          map.queryRenderedFeatures(point, {
-            layers: interactiveLayers,
-            radius: HOVER_HIT_RADIUS,
-          })
-
-        type InteractionPick =
-          | { kind: 'home' }
-          | { kind: 'project'; iso: string; info: ProjectCountry }
-
-        const pickInteraction = (
-          features: import('maplibre-gl').MapGeoJSONFeature[],
-        ): InteractionPick | null => {
-          for (const feature of features) {
-            const layerId = feature.layer.id
-            if (
-              layerId === HOME_MARKER_DOT_LAYER ||
-              layerId === HOME_MARKER_GLOW_LAYER ||
-              layerId === FILL_HOME_LAYER
-            ) {
-              return { kind: 'home' }
-            }
-            if (layerId === FILL_HIGHLIGHT_LAYER) {
-              const iso = feature.properties?.[ISO_KEY] as string | undefined
-              if (!iso) continue
-              const info = countryMap.get(iso)
-              if (info) return { kind: 'project', iso, info }
-            }
-          }
-          return null
-        }
-
         const clearAllHover = () => {
-          map.getCanvas().style.cursor = ''
+          map.getCanvas().style.cursor = 'default'
           clearProjectHover()
           setHomeHover(false)
           popup.remove()
+        }
+
+        const scheduleHoverClear = () => {
+          if (hoverClearTimer) clearTimeout(hoverClearTimer)
+          hoverClearTimer = setTimeout(() => {
+            hoverClearTimer = null
+            clearAllHover()
+          }, 40)
+        }
+
+        const cancelHoverClear = () => {
+          if (hoverClearTimer) {
+            clearTimeout(hoverClearTimer)
+            hoverClearTimer = null
+          }
         }
 
         const applyProjectHover = (
@@ -416,6 +421,7 @@ export default function Globe({
           info: ProjectCountry,
           lngLat: import('maplibre-gl').LngLatLike,
         ) => {
+          cancelHoverClear()
           setHomeHover(false)
           map.getCanvas().style.cursor = 'pointer'
 
@@ -439,36 +445,79 @@ export default function Globe({
         }
 
         const applyHomeHover = (lngLat: import('maplibre-gl').LngLatLike) => {
+          cancelHoverClear()
           clearProjectHover()
           map.getCanvas().style.cursor = 'default'
           setHomeHover(true)
           showHomePopup(map, lngLat)
         }
 
-        if (!isMobile) {
-          map.on('mousemove', (e) => {
-            const pick = pickInteraction(queryInteractiveFeatures(e.point))
-            if (!pick) {
-              clearAllHover()
-              return
-            }
-            if (pick.kind === 'home') {
-              applyHomeHover(e.lngLat)
-              return
-            }
-            applyProjectHover(pick.iso, pick.info, e.lngLat)
+        const bindProjectPointer = (layerId: string) => {
+          map.on('mousemove', layerId, (e) => {
+            if (!e.features || e.features.length === 0) return
+            const iso = e.features[0].properties?.[ISO_KEY] as string | undefined
+            if (!iso) return
+            const info = countryMap.get(iso)
+            if (!info) return
+            applyProjectHover(iso, info, e.lngLat)
+          })
+
+          map.on('mouseleave', layerId, scheduleHoverClear)
+
+          map.on('click', layerId, (e) => {
+            if (!e.features || e.features.length === 0) return
+            const iso = e.features[0].properties?.[ISO_KEY] as string | undefined
+            if (!iso) return
+            const info = countryMap.get(iso)
+            if (info) onCountryClickRef.current(info.projectId)
           })
         }
 
-        map.on('click', (e) => {
-          const pick = pickInteraction(queryInteractiveFeatures(e.point))
-          if (!pick) return
-          if (pick.kind === 'home') {
+        const bindHomePointer = (layerId: string) => {
+          map.on('mousemove', layerId, (e) => {
+            applyHomeHover(e.lngLat)
+          })
+
+          map.on('mouseleave', layerId, scheduleHoverClear)
+
+          map.on('click', layerId, (e) => {
             showHomePopup(map, e.lngLat)
-            return
-          }
-          onCountryClickRef.current(pick.info.projectId)
-        })
+          })
+        }
+
+        if (!isMobile) {
+          bindProjectPointer(FILL_HIGHLIGHT_LAYER)
+          bindProjectPointer(HIT_PROJECT_LAYER)
+          bindHomePointer(FILL_HOME_LAYER)
+          bindHomePointer(HIT_HOME_LAYER)
+          bindHomePointer(HOME_MARKER_DOT_LAYER)
+          bindHomePointer(HOME_MARKER_GLOW_LAYER)
+          map.on('mouseleave', clearAllHover)
+        } else {
+          map.on('click', FILL_HIGHLIGHT_LAYER, (e) => {
+            if (!e.features || e.features.length === 0) return
+            const iso = e.features[0].properties?.[ISO_KEY] as string | undefined
+            if (!iso) return
+            const info = countryMap.get(iso)
+            if (info) onCountryClickRef.current(info.projectId)
+          })
+          map.on('click', HIT_PROJECT_LAYER, (e) => {
+            if (!e.features || e.features.length === 0) return
+            const iso = e.features[0].properties?.[ISO_KEY] as string | undefined
+            if (!iso) return
+            const info = countryMap.get(iso)
+            if (info) onCountryClickRef.current(info.projectId)
+          })
+          map.on('click', FILL_HOME_LAYER, (e) => {
+            showHomePopup(map, e.lngLat)
+          })
+          map.on('click', HIT_HOME_LAYER, (e) => {
+            showHomePopup(map, e.lngLat)
+          })
+          map.on('click', HOME_MARKER_DOT_LAYER, (e) => {
+            showHomePopup(map, e.lngLat)
+          })
+        }
 
         const tick = (t: number) => {
           if (!mapRef.current) return
@@ -506,6 +555,7 @@ export default function Globe({
       cleanup = () => {
         canvasEl.removeEventListener('mouseenter', onEnter)
         canvasEl.removeEventListener('mouseleave', onLeave)
+        if (hoverClearTimer) clearTimeout(hoverClearTimer)
         if (rafRef.current != null) cancelAnimationFrame(rafRef.current)
         rafRef.current = null
         lastFrameRef.current = null

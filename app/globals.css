@@ -240,6 +240,15 @@ body {
   border-radius: 0.5rem;
   padding: 0;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+}
+
+.globe-popup.maplibregl-popup {
+  pointer-events: none;
+}
+
+.globe-canvas .maplibre-gl-canvas {
+  cursor: default;
 }
 
 .globe-popup .maplibregl-popup-tip {
