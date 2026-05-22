@@ -15,6 +15,9 @@ export const metadata: Metadata = {
   description:
     'QA Engineer portfolio showcasing end-to-end testing with Playwright, API testing, and load & performance testing with k6.',
   keywords: ['QA Engineer', 'Playwright', 'k6', 'E2E testing', 'API testing', 'performance testing'],
+  icons: {
+    icon: [{ url: '/logo-32.png', sizes: '32x32', type: 'image/png' }],
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
