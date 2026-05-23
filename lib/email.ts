@@ -1,4 +1,5 @@
 import { Resend } from 'resend'
+import ContactNotification from '@/emails/ContactNotification'
 
 if (!process.env.RESEND_API_KEY) {
   if (process.env.NODE_ENV === 'production') {
@@ -12,16 +13,31 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL ?? 'filip.gacic98@gmail.com'
 const FROM_EMAIL = process.env.FROM_EMAIL ?? 'contact@fgacic.com'
 
+// Strip characters that would let a submitter inject extra email headers
+// or break the From line. Collapses whitespace and caps length.
+function sanitizeHeaderName(raw: string): string {
+  return raw.replace(/[<>"\r\n\t]/g, '').replace(/\s+/g, ' ').trim().slice(0, 80)
+}
+
 export async function sendContactNotification(params: {
   name: string
   email: string
   message: string
   id: string
 }) {
+  const safeName = sanitizeHeaderName(params.name) || 'Contact form'
+
   const { error } = await resend.emails.send({
-    from: `fgacic.com <${FROM_EMAIL}>`,
+    from: `${safeName} via fgacic.com <${FROM_EMAIL}>`,
     to: NOTIFY_EMAIL,
-    subject: `New contact from ${params.name}`,
+    replyTo: params.email,
+    subject: `New contact from ${safeName}`,
+    react: ContactNotification({
+      name: params.name,
+      email: params.email,
+      message: params.message,
+      id: params.id,
+    }),
     text: [
       `Name: ${params.name}`,
       `Email: ${params.email}`,

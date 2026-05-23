@@ -2,8 +2,31 @@
 
 import { useState } from 'react'
 import { motion } from 'motion/react'
+import isEmail from 'validator/lib/isEmail'
 
 type Status = 'idle' | 'submitting' | 'success' | 'rateLimit' | 'error'
+
+function validateFields(fields: { name: string; email: string; message: string }) {
+  const errors: Record<string, string> = {}
+  if (!fields.name.trim()) {
+    errors.name = 'Name is required'
+  } else if (fields.name.trim().length > 100) {
+    errors.name = 'Name must be 100 characters or fewer'
+  }
+  if (!fields.email.trim()) {
+    errors.email = 'Email is required'
+  } else if (!isEmail(fields.email.trim())) {
+    errors.email = 'Enter a valid email address'
+  }
+  if (!fields.message.trim()) {
+    errors.message = 'Message is required'
+  } else if (fields.message.trim().length < 10) {
+    errors.message = 'Message must be at least 10 characters'
+  } else if (fields.message.trim().length > 2000) {
+    errors.message = 'Message must be 2000 characters or fewer'
+  }
+  return errors
+}
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -48,8 +71,28 @@ export default function ContactForm() {
     e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'
   }
 
+  function handleFieldBlur(e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    handleBlur(e)
+    const { name } = e.target
+    const fieldErrors = validateFields(fields)
+    setErrors(prev => {
+      const next = { ...prev }
+      if (fieldErrors[name]) next[name] = fieldErrors[name]
+      else delete next[name]
+      return next
+    })
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+
+    const clientErrors = validateFields(fields)
+    if (Object.keys(clientErrors).length > 0) {
+      setErrors(clientErrors)
+      setStatus('idle')
+      return
+    }
+
     setStatus('submitting')
     setErrors({})
 
@@ -184,7 +227,7 @@ export default function ContactForm() {
                 value={fields.name}
                 onChange={handleChange}
                 onFocus={handleFocus}
-                onBlur={handleBlur}
+                onBlur={handleFieldBlur}
                 style={{
                   ...inputStyle,
                   borderColor: errors.name ? 'rgba(248,113,113,0.5)' : 'rgba(255,255,255,0.1)',
@@ -221,7 +264,7 @@ export default function ContactForm() {
                 value={fields.email}
                 onChange={handleChange}
                 onFocus={handleFocus}
-                onBlur={handleBlur}
+                onBlur={handleFieldBlur}
                 style={{
                   ...inputStyle,
                   borderColor: errors.email ? 'rgba(248,113,113,0.5)' : 'rgba(255,255,255,0.1)',
@@ -258,7 +301,7 @@ export default function ContactForm() {
                 value={fields.message}
                 onChange={handleChange}
                 onFocus={handleFocus}
-                onBlur={handleBlur}
+                onBlur={handleFieldBlur}
                 style={{
                   ...inputStyle,
                   resize: 'vertical',

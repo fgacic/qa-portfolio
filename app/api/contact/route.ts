@@ -1,10 +1,9 @@
 import { NextRequest } from 'next/server'
+import isEmail from 'validator/lib/isEmail'
 import { insertSubmission, getAllSubmissions, type Submission } from '@/lib/db'
 import { checkRateLimit } from '@/lib/rateLimit'
 import { sendContactNotification } from '@/lib/email'
 import { requireCfAccess } from '@/lib/cfAccess'
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export async function POST(req: NextRequest) {
   const ip = req.headers.get('x-forwarded-for') ?? 'unknown'
@@ -18,7 +17,7 @@ export async function POST(req: NextRequest) {
     errors.push({ field: 'name', message: 'Name must be 100 characters or fewer' })
   }
 
-  if (!body.email || typeof body.email !== 'string' || !EMAIL_RE.test(body.email.trim())) {
+  if (!body.email || typeof body.email !== 'string' || !isEmail(body.email.trim())) {
     errors.push({ field: 'email', message: 'A valid email address is required' })
   }
 
