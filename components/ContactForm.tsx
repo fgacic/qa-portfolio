@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { motion } from 'motion/react'
+import { useEffect, useState } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
 import isEmail from 'validator/lib/isEmail'
 
 type Status = 'idle' | 'submitting' | 'success' | 'rateLimit' | 'error'
@@ -54,6 +54,14 @@ export default function ContactForm() {
   const [fields, setFields] = useState({ name: '', email: '', message: '' })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [status, setStatus] = useState<Status>('idle')
+  const [toastVisible, setToastVisible] = useState(false)
+
+  useEffect(() => {
+    if (status !== 'success') return
+    setToastVisible(true)
+    const timer = setTimeout(() => setToastVisible(false), 5000)
+    return () => clearTimeout(timer)
+  }, [status])
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value } = e.target
@@ -127,6 +135,100 @@ export default function ContactForm() {
 
   return (
     <section id="contact" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+      <AnimatePresence>
+        {toastVisible && (
+          <motion.div
+            role="status"
+            aria-live="polite"
+            initial={{ opacity: 0, y: -24, scale: 0.92 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -16, scale: 0.96 }}
+            transition={{ type: 'spring', stiffness: 380, damping: 24, mass: 0.6 }}
+            style={{
+              position: 'fixed',
+              top: '1.5rem',
+              right: '1.5rem',
+              zIndex: 1000,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.875rem',
+              minHeight: '4rem',
+              padding: '1.125rem 1.5rem',
+              borderRadius: '0.875rem',
+              border: '1px solid rgba(52,211,153,0.55)',
+              background: 'linear-gradient(135deg, rgba(16,30,24,0.96), rgba(10,10,12,0.96))',
+              color: 'rgba(209,250,229,1)',
+              fontSize: '0.975rem',
+              fontWeight: 500,
+              boxShadow: '0 18px 45px rgba(0,0,0,0.5), 0 0 0 1px rgba(52,211,153,0.15), 0 0 24px rgba(52,211,153,0.18)',
+              backdropFilter: 'blur(8px)',
+              maxWidth: 'calc(100vw - 3rem)',
+              overflow: 'hidden',
+            }}
+          >
+            <motion.span
+              aria-hidden="true"
+              initial={{ scale: 0 }}
+              animate={{ scale: [0, 1.25, 1] }}
+              transition={{ duration: 0.5, times: [0, 0.65, 1], ease: [0.22, 1, 0.36, 1], delay: 0.08 }}
+              style={{
+                position: 'relative',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '1.75rem',
+                height: '1.75rem',
+                flexShrink: 0,
+                borderRadius: '999px',
+                background: 'rgba(52,211,153,0.18)',
+                color: 'rgba(110,231,183,1)',
+              }}
+            >
+              <motion.span
+                initial={{ opacity: 0.6, scale: 1 }}
+                animate={{ opacity: 0, scale: 2.2 }}
+                transition={{ duration: 1.1, ease: 'easeOut', delay: 0.25 }}
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  borderRadius: '999px',
+                  border: '2px solid rgba(110,231,183,0.7)',
+                }}
+              />
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <motion.polyline
+                  points="20 6 9 17 4 12"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 0.45, ease: [0.65, 0, 0.35, 1], delay: 0.3 }}
+                />
+              </svg>
+            </motion.span>
+            <motion.span
+              initial={{ opacity: 0, x: -6 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+            >
+              Message sent — I&apos;ll get back to you soon.
+            </motion.span>
+            <motion.span
+              aria-hidden="true"
+              initial={{ scaleX: 1 }}
+              animate={{ scaleX: 0 }}
+              transition={{ duration: 5, ease: 'linear' }}
+              style={{
+                position: 'absolute',
+                left: 0,
+                bottom: 0,
+                height: '2px',
+                width: '100%',
+                transformOrigin: 'left center',
+                background: 'linear-gradient(90deg, rgba(110,231,183,0.9), rgba(52,211,153,0.4))',
+              }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
       <div className="section">
         <motion.div
           initial="hidden"
@@ -141,22 +243,6 @@ export default function ContactForm() {
           <p className="section-body" style={{ marginBottom: '2rem' }}>
             Have a project in mind or want to talk QA? Send me a message.
           </p>
-
-          {status === 'success' && (
-            <div
-              style={{
-                padding: '1rem 1.25rem',
-                borderRadius: '0.75rem',
-                border: '1px solid rgba(52,211,153,0.3)',
-                background: 'rgba(52,211,153,0.08)',
-                color: 'rgba(167,243,208,0.9)',
-                fontSize: '0.9rem',
-                marginBottom: '1.5rem',
-              }}
-            >
-              Message sent — I&apos;ll get back to you soon.
-            </div>
-          )}
 
           {status === 'rateLimit' && (
             <div
