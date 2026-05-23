@@ -3,19 +3,19 @@
 import { motion } from 'motion/react'
 
 const SKILLS = [
-  { name: 'Playwright', category: 'E2E Testing', accent: '#a855f7' },
-  { name: 'Cypress', category: 'E2E Testing', accent: '#38bdf8' },
-  { name: 'k6', category: 'Load & Performance', accent: '#38bdf8' },
-  { name: 'Postman / Bruno', category: 'API Testing', accent: '#6366f1' },
-  { name: 'TypeScript', category: 'Language', accent: '#818cf8' },
-  { name: 'GitHub Actions', category: 'CI/CD', accent: '#a855f7' },
-  { name: 'Docker', category: 'Infrastructure', accent: '#38bdf8' },
-  { name: 'REST / GraphQL', category: 'Protocols', accent: '#6366f1' },
-  { name: 'Allure Reports', category: 'Reporting', accent: '#818cf8' },
-  { name: 'BrowserStack', category: 'Cross-browser Testing', accent: '#a855f7' },
-  { name: 'Azure DevOps', category: 'CI/CD', accent: '#38bdf8' },
-  { name: 'Percy', category: 'Visual Regression', accent: '#6366f1' },
-  { name: 'Lighthouse', category: 'Performance / A11y', accent: '#818cf8' },
+  { name: 'Playwright', category: 'E2E Testing', accent: '#a855f7', href: 'https://playwright.dev/' },
+  { name: 'Cypress', category: 'E2E Testing', accent: '#38bdf8', href: 'https://www.cypress.io/' },
+  { name: 'k6', category: 'Load & Performance', accent: '#38bdf8', href: 'https://k6.io/' },
+  { name: 'Postman / Bruno', category: 'API Testing', accent: '#6366f1', href: 'https://www.postman.com/' },
+  { name: 'TypeScript', category: 'Language', accent: '#818cf8', href: 'https://www.typescriptlang.org/' },
+  { name: 'GitHub Actions', category: 'CI/CD', accent: '#a855f7', href: 'https://github.com/features/actions' },
+  { name: 'Docker', category: 'Infrastructure', accent: '#38bdf8', href: 'https://www.docker.com/' },
+  { name: 'REST / GraphQL', category: 'Protocols', accent: '#6366f1', href: 'https://graphql.org/' },
+  { name: 'Allure Reports', category: 'Reporting', accent: '#818cf8', href: 'https://allurereport.org/' },
+  { name: 'BrowserStack', category: 'Cross-browser Testing', accent: '#a855f7', href: 'https://www.browserstack.com/' },
+  { name: 'Azure DevOps', category: 'CI/CD', accent: '#38bdf8', href: 'https://azure.microsoft.com/en-us/products/devops' },
+  { name: 'Percy', category: 'Visual Regression', accent: '#6366f1', href: 'https://percy.io/' },
+  { name: 'Lighthouse', category: 'Performance / A11y', accent: '#818cf8', href: 'https://developer.chrome.com/docs/lighthouse/overview' },
 ]
 
 const cardVariants = {
@@ -61,8 +61,11 @@ export default function Skills() {
           }}
         >
           {SKILLS.map((skill, i) => (
-            <motion.div
+            <motion.a
               key={skill.name}
+              href={skill.href}
+              target="_blank"
+              rel="noopener noreferrer"
               custom={i}
               variants={cardVariants}
               initial="hidden"
@@ -70,11 +73,14 @@ export default function Skills() {
               viewport={{ once: true, margin: '-40px' }}
               whileHover={{ y: -4, transition: { duration: 0.2 } }}
               style={{
+                display: 'block',
                 padding: '1.25rem',
                 borderRadius: '0.75rem',
                 border: '1px solid rgba(255,255,255,0.07)',
                 background: 'rgba(255,255,255,0.03)',
-                cursor: 'default',
+                cursor: 'pointer',
+                textDecoration: 'none',
+                color: 'inherit',
               }}
             >
               {/* Accent dot */}
@@ -108,7 +114,7 @@ export default function Skills() {
               >
                 {skill.category}
               </div>
-            </motion.div>
+            </motion.a>
           ))}
         </div>
       </div>
