@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { motion } from 'motion/react'
 import type { Project } from '@/lib/projects'
+import { preloadGlobeAssets } from '@/lib/globePreload'
 
 const Globe = dynamic(() => import('./Globe'), { ssr: false })
 
@@ -36,6 +37,16 @@ function projectCardSurface(accent: string, isHovered: boolean) {
 
 export default function Work({ projects }: { projects: Project[] }) {
   const [hoveredProjectId, setHoveredProjectId] = useState<string | null>(null)
+
+  useEffect(() => {
+    const run = () => preloadGlobeAssets()
+    if (typeof window.requestIdleCallback === 'function') {
+      const id = window.requestIdleCallback(run, { timeout: 4000 })
+      return () => window.cancelIdleCallback(id)
+    }
+    const id = setTimeout(run, 1500)
+    return () => clearTimeout(id)
+  }, [])
 
   const scrollToProject = (id: string) => {
     const el = document.getElementById(`project-${id}`)

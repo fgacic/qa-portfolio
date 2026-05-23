@@ -2,11 +2,10 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Project } from '@/lib/projects'
+import { loadGeoJsonHigh, loadGeoJsonLow, loadMaplibreGl } from '@/lib/globePreload'
 import 'maplibre-gl/dist/maplibre-gl.css'
 
 const ISO_KEY = 'ISO_A3'
-const GEOJSON_LOW_URL = '/data/countries-110m.geo.json'
-const GEOJSON_HIGH_URL = '/data/countries-50m.geo.json'
 const ROTATION_DEG_PER_SEC = 6
 const MY_LOCATION_ISO = 'HRV'
 const MY_LOCATION_LABEL = 'My location'
@@ -54,7 +53,9 @@ export default function Globe({
   const popupRef = useRef<import('maplibre-gl').Popup | null>(null)
   const rafRef = useRef<number | null>(null)
   const lastFrameRef = useRef<number | null>(null)
-  const pausedRef = useRef<boolean>(false)
+  const visibleRef = useRef(false)
+  const interactionPausedRef = useRef(false)
+  const syncActivityRef = useRef<(() => void) | null>(null)
   const hoveredFeatureIdRef = useRef<string | number | null>(null)
   const externalHoveredIsoRef = useRef<string | null>(null)
   const onCountryHoverRef = useRef(onCountryHover)
@@ -110,13 +111,33 @@ export default function Globe({
   }, [shouldMount])
 
   useEffect(() => {
+    if (!shouldMount) return
+    const el = containerRef.current
+    if (!el) return
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visibleRef.current = entry.isIntersecting
+        syncActivityRef.current?.()
+      },
+      { rootMargin: '80px', threshold: 0 },
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [shouldMount])
+
+  useEffect(() => {
     if (!shouldMount || !containerRef.current) return
     let cancelled = false
     let cleanup: (() => void) | null = null
     let hoverClearTimer: ReturnType<typeof setTimeout> | null = null
 
     ;(async () => {
-      const maplibregl = (await import('maplibre-gl')).default
+      const [maplibregl, geoLow, geoHigh] = await Promise.all([
+        loadMaplibreGl(),
+        loadGeoJsonLow(),
+        loadGeoJsonHigh(),
+      ])
       if (cancelled || !containerRef.current) return
 
       const highlightCases: unknown[] = ['case']
@@ -182,13 +203,13 @@ export default function Globe({
 
         map.addSource(COUNTRIES_LOW_SOURCE, {
           type: 'geojson',
-          data: GEOJSON_LOW_URL,
+          data: geoLow,
           promoteId: ISO_KEY,
         })
 
         map.addSource(COUNTRIES_HIGH_SOURCE, {
           type: 'geojson',
-          data: GEOJSON_HIGH_URL,
+          data: geoHigh,
           promoteId: ISO_KEY,
           tolerance: 0,
         })
@@ -516,33 +537,67 @@ export default function Globe({
           })
         }
 
-        const tick = (t: number) => {
-          if (!mapRef.current) return
-          if (lastFrameRef.current == null) lastFrameRef.current = t
-          const dt = (t - lastFrameRef.current) / 1000
-          lastFrameRef.current = t
-          if (!pausedRef.current) {
+        const stopRotationLoop = () => {
+          if (rafRef.current == null) return
+          cancelAnimationFrame(rafRef.current)
+          rafRef.current = null
+          lastFrameRef.current = null
+        }
+
+        const startRotationLoop = () => {
+          if (rafRef.current != null) return
+
+          const tick = (t: number) => {
+            if (!mapRef.current || !visibleRef.current || interactionPausedRef.current) {
+              stopRotationLoop()
+              return
+            }
+            if (lastFrameRef.current == null) lastFrameRef.current = t
+            const dt = (t - lastFrameRef.current) / 1000
+            lastFrameRef.current = t
             const current = mapRef.current.getCenter()
             const newLng = ((current.lng + ROTATION_DEG_PER_SEC * dt + 540) % 360) - 180
             mapRef.current.setCenter([newLng, current.lat])
+            rafRef.current = requestAnimationFrame(tick)
           }
+
           rafRef.current = requestAnimationFrame(tick)
         }
-        rafRef.current = requestAnimationFrame(tick)
+
+        const syncGlobeActivity = () => {
+          if (!mapRef.current) return
+
+          if (!visibleRef.current) {
+            stopRotationLoop()
+            return
+          }
+
+          if (interactionPausedRef.current) stopRotationLoop()
+          else startRotationLoop()
+        }
+
+        syncActivityRef.current = syncGlobeActivity
+        syncGlobeActivity()
       })
 
       const canvasEl = map.getCanvasContainer()
       const onEnter = () => {
-        pausedRef.current = true
+        interactionPausedRef.current = true
+        syncActivityRef.current?.()
       }
       const onLeave = () => {
-        pausedRef.current = false
+        interactionPausedRef.current = false
+        syncActivityRef.current?.()
       }
       const onDragStart = () => {
-        pausedRef.current = true
+        interactionPausedRef.current = true
+        syncActivityRef.current?.()
       }
       const onDragEnd = () => {
-        if (!canvasEl.matches(':hover')) pausedRef.current = false
+        if (!canvasEl.matches(':hover')) {
+          interactionPausedRef.current = false
+          syncActivityRef.current?.()
+        }
       }
       canvasEl.addEventListener('mouseenter', onEnter)
       canvasEl.addEventListener('mouseleave', onLeave)
@@ -550,6 +605,7 @@ export default function Globe({
       map.on('dragend', onDragEnd)
 
       cleanup = () => {
+        syncActivityRef.current = null
         canvasEl.removeEventListener('mouseenter', onEnter)
         canvasEl.removeEventListener('mouseleave', onLeave)
         if (hoverClearTimer) clearTimeout(hoverClearTimer)
