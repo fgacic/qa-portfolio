@@ -1,10 +1,10 @@
 name: CI
 
+# Temporarily disabled — auto-trigger removed while focused on other work.
+# Coolify auto-deploys on push independently; this workflow is a QA gate only.
+# Re-enable by restoring the `push` and `pull_request` triggers below.
 on:
-  push:
-    branches: [main, test]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
 
 jobs:
   ci:
