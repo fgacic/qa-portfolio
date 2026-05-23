@@ -23,8 +23,8 @@ export async function POST(req: NextRequest) {
 
   if (!body.message || typeof body.message !== 'string' || body.message.trim().length < 10) {
     errors.push({ field: 'message', message: 'Message must be at least 10 characters' })
-  } else if (body.message.trim().length > 2000) {
-    errors.push({ field: 'message', message: 'Message must be 2000 characters or fewer' })
+  } else if (body.message.trim().length > 500) {
+    errors.push({ field: 'message', message: 'Message must be 500 characters or fewer' })
   }
 
   if (errors.length > 0) {

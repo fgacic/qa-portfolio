@@ -28,8 +28,8 @@ test.describe('API — POST /api/contact', () => {
     expect(res.status()).toBe(422)
   })
 
-  test('returns 422 when message exceeds 2000 chars', async ({ request }) => {
-    const res = await request.post('/api/contact', { data: { ...VALID, message: 'a'.repeat(2001) } })
+  test('returns 422 when message exceeds 500 chars', async ({ request }) => {
+    const res = await request.post('/api/contact', { data: { ...VALID, message: 'a'.repeat(501) } })
     expect(res.status()).toBe(422)
   })
 

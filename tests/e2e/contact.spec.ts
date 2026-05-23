@@ -28,9 +28,9 @@ test.describe('Contact form', () => {
   })
 
   test('shows character counter on message field', async ({ page }) => {
-    await expect(page.locator('#contact')).toContainText('/ 2000')
+    await expect(page.locator('#contact')).toContainText('/ 500')
     await page.locator('#contact textarea[name="message"]').fill('hello')
-    await expect(page.locator('#contact')).toContainText('5 / 2000')
+    await expect(page.locator('#contact')).toContainText('5 / 500')
   })
 
   test('shows success message after valid submission', async ({ page }) => {

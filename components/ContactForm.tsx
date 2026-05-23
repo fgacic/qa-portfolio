@@ -22,8 +22,8 @@ function validateFields(fields: { name: string; email: string; message: string }
     errors.message = 'Message is required'
   } else if (fields.message.trim().length < 10) {
     errors.message = 'Message must be at least 10 characters'
-  } else if (fields.message.trim().length > 2000) {
-    errors.message = 'Message must be 2000 characters or fewer'
+  } else if (fields.message.trim().length > 500) {
+    errors.message = 'Message must be 500 characters or fewer'
   }
   return errors
 }
@@ -298,6 +298,7 @@ export default function ContactForm() {
                 id="contact-message"
                 name="message"
                 rows={5}
+                maxLength={500}
                 value={fields.message}
                 onChange={handleChange}
                 onFocus={handleFocus}
@@ -318,7 +319,7 @@ export default function ContactForm() {
                   textAlign: 'right',
                 }}
               >
-                {fields.message.length} / 2000
+                {fields.message.length} / 500
               </p>
               {errors.message && (
                 <p style={{ margin: '0.25rem 0 0', fontSize: '0.8rem', color: 'rgba(248,113,113,0.9)' }}>
