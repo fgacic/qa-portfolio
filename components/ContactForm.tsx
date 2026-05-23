@@ -304,6 +304,7 @@ export default function ContactForm() {
                 onBlur={handleFieldBlur}
                 style={{
                   ...inputStyle,
+                  minHeight: '100px',
                   resize: 'vertical',
                   borderColor: errors.message ? 'rgba(248,113,113,0.5)' : 'rgba(255,255,255,0.1)',
                 }}
