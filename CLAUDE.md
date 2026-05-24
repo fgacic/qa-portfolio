@@ -15,8 +15,9 @@ yarn start            # Run production build (node .next/standalone/server.js)
 yarn lint             # ESLint
 
 # Tests — must run against a started server (yarn build && yarn start &)
-cd tests && npx playwright test                  # All E2E + API tests
-cd tests && npx playwright test e2e/hero.spec.ts # Single spec file
+yarn playwright:test                  # All E2E + API tests
+yarn playwright:test e2e/hero.spec.ts # Single spec file
+yarn playwright:report                # Open last HTML report
 k6 run k6/smoke.js --env BASE_URL=http://localhost:3000
 k6 run k6/load.js --env BASE_URL=https://fgacic.com  # Manual only, not CI
 PERCY_TOKEN=... npx percy exec -- yarn playwright:visual  # Visual regression (Percy)

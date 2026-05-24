@@ -126,7 +126,10 @@ Requires: Node 20, yarn, [k6](https://k6.io/docs/get-started/installation/) inst
 yarn build && node .next/standalone/server.js &
 
 # E2E + API tests (from repo root)
-cd tests && npx playwright test
+yarn playwright:test
+
+# Open last HTML report
+yarn playwright:report
 
 # k6 smoke — run on every change
 k6 run k6/smoke.js --env BASE_URL=http://localhost:3000
