@@ -1,15 +1,6 @@
 import { Resend } from 'resend'
 import ContactNotification from '@/emails/ContactNotification'
 
-if (!process.env.RESEND_API_KEY) {
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error('RESEND_API_KEY is not set — contact notifications will not work')
-  } else {
-    console.warn('[email] RESEND_API_KEY is not set — emails will not be sent in dev')
-  }
-}
-
-const resend = new Resend(process.env.RESEND_API_KEY)
 const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL ?? 'filip.gacic98@gmail.com'
 const FROM_EMAIL = process.env.FROM_EMAIL ?? 'contact@fgacic.com'
 
@@ -25,6 +16,16 @@ export async function sendContactNotification(params: {
   message: string
   id: string
 }) {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('RESEND_API_KEY is not set — contact notifications will not work')
+    }
+    console.warn('[email] RESEND_API_KEY is not set — emails will not be sent in dev')
+    return
+  }
+
+  const resend = new Resend(apiKey)
   const safeName = sanitizeHeaderName(params.name) || 'Contact form'
 
   const { error } = await resend.emails.send({

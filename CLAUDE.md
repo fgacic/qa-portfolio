@@ -60,11 +60,20 @@ Playwright config: 2 retries in CI, 1 worker (sequential), HTML report → `play
 
 **Build output** — `output: 'standalone'` in `next.config.ts`; produces ~150 MB Docker image.
 
-**Docker** — multi-stage (node:20-alpine builder → runner); runs as non-root `nextjs:nodejs` (UID 1001).
+**Docker** — multi-stage (node:20-alpine builder → runner); runs as non-root `nextjs:nodejs` (UID 1001). Listens on `0.0.0.0:3000`; persists SQLite to `/app/data` (mount a Coolify volume here).
 
-**Stack**: GitHub Actions CI → Coolify (webhook) → Docker on Hetzner VPS, fronted by Cloudflare (TLS + proxy).
+**Stack**: GitHub Actions CI → Coolify (webhook) → Docker on Hetzner VPS → Cloudflare DNS + proxy → Cloudflare Zero Trust (Access).
 
-**CI pipeline** (`.github/workflows/ci.yml`): lint → build → Playwright tests → k6 smoke → publish Playwright report to GitHub Pages (main branch only).
+**Deploy flow** — CI is the deploy gate. On push to `main`:
+1. GitHub Actions: lint → build → Playwright tests → k6 smoke → publish Playwright report to GitHub Pages → call Coolify deploy webhook.
+2. Coolify (self-hosted on the Hetzner VPS) receives the webhook only after CI passes, pulls the new commit, rebuilds the Docker image from `Dockerfile`, and rolls the container.
+
+Coolify's own GitHub webhook / auto-deploy is **disabled** — Coolify only deploys when triggered by the CI webhook step. The `COOLIFY_WEBHOOK_URL` secret must be set in GitHub Actions (grab it from the Coolify application settings).
+
+**Cloudflare layers**:
+- **DNS + proxy (orange-cloud)** — `fgacic.com` and `www` proxy through Cloudflare; TLS terminates at the edge, then re-encrypts to the Hetzner origin. The container itself does not handle TLS.
+- **Zero Trust / Access** — Cloudflare Access policy in front of `/admin` and `/api/admin/*` (and `GET /api/contact`). Unauthenticated requests are intercepted at the edge and redirected to the email-OTP / IdP login before ever hitting the app. The app still verifies the `Cf-Access-Jwt-Assertion` header against `CF_ACCESS_TEAM_DOMAIN` + `CF_ACCESS_AUD` as defence-in-depth. Sign-out goes to `/cdn-cgi/access/logout`.
+- For local admin work without CF Access in front, set `ADMIN_DEV_BYPASS=true` (refused in production).
 
 ## Key Decisions
 

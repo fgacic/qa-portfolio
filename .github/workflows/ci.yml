@@ -93,3 +93,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./playwright-report
           destination_dir: playwright-report
+
+      - name: Deploy to Coolify
+        if: github.ref == 'refs/heads/main'
+        run: curl -sf -o /dev/null "${{ secrets.COOLIFY_WEBHOOK_URL }}"
