@@ -33,7 +33,7 @@ jobs:
         run: yarn build
 
       - name: Install Playwright browsers
-        run: yarn playwright install --with-deps chromium firefox
+        run: npx playwright install --with-deps chromium firefox
 
       - name: Start Next.js server
         run: yarn start &
