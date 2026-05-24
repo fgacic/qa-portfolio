@@ -14,7 +14,8 @@ yarn build            # Build standalone app + copy static/public
 yarn start            # Run production build (node .next/standalone/server.js)
 yarn lint             # ESLint
 
-# Tests — must run against a started server (yarn build && yarn start &)
+# Tests — must run against a started server with email disabled
+# yarn build && yarn start:test &
 yarn playwright:test                  # All E2E + API tests
 yarn playwright:test e2e/hero.spec.ts # Single spec file
 yarn playwright:report                # Open last HTML report

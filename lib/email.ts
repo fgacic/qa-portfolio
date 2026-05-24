@@ -16,6 +16,11 @@ export async function sendContactNotification(params: {
   message: string
   id: string
 }) {
+  if (process.env.DISABLE_EMAIL === 'true') {
+    console.warn('[email] DISABLE_EMAIL=true — skipping notification')
+    return
+  }
+
   const apiKey = process.env.RESEND_API_KEY
   if (!apiKey) {
     if (process.env.NODE_ENV === 'production') {
