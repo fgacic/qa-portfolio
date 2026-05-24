@@ -4,6 +4,7 @@ import Work from '@/components/Work'
 import Skills from '@/components/Skills'
 import TestingShowcase from '@/components/TestingShowcase'
 import ContactForm from '@/components/ContactForm'
+import Footer from '@/components/Footer'
 import { PROJECTS } from '@/lib/projects'
 
 export default function Home() {
@@ -15,6 +16,7 @@ export default function Home() {
       <Skills />
       <TestingShowcase />
       <ContactForm />
+      <Footer />
     </>
   )
 }

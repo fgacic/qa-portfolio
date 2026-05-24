@@ -2,8 +2,8 @@
 
 > **The repo is the portfolio.** Anyone reading this is looking at the same artefacts I produce at work: a production-grade CI pipeline, three test disciplines, and a deployment strategy I own end-to-end.
 
-[![CI](https://github.com/fgacic/home/actions/workflows/ci.yml/badge.svg)](https://github.com/fgacic/home/actions/workflows/ci.yml)
-[![Playwright Report](https://img.shields.io/badge/Playwright-report-7c3aed)](https://fgacic.github.io/home/playwright-report)
+[![CI](https://github.com/fgacic/qa-portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/fgacic/qa-portfolio/actions/workflows/ci.yml)
+[![Playwright Report](https://img.shields.io/badge/Playwright-report-7c3aed)](https://fgacic.github.io/qa-portfolio/playwright-report)
 
 ---
 

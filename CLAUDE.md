@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **fgacic.com** — QA Engineer portfolio site built with Next.js 15 App Router + TypeScript + Tailwind CSS v4. The repo itself demonstrates production-grade testing: Playwright (E2E + API), k6 (load), and a full CI/CD pipeline.
 
+**Public repo** (`github.com/fgacic/qa-portfolio`) — treat anything committed as world-readable. Secrets live in env vars only (Coolify for prod, `.env.local` for dev — both gitignored). History was scrubbed via `git filter-repo` before flipping to public; do not re-introduce `data/*.sqlite*` to the tracked tree.
+
 ## Commands
 
 ```bash
