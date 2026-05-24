@@ -19,6 +19,7 @@ cd tests && npx playwright test                  # All E2E + API tests
 cd tests && npx playwright test e2e/hero.spec.ts # Single spec file
 k6 run k6/smoke.js --env BASE_URL=http://localhost:3000
 k6 run k6/load.js --env BASE_URL=https://fgacic.com  # Manual only, not CI
+PERCY_TOKEN=... npx percy exec -- yarn playwright:visual  # Visual regression (Percy)
 ```
 
 ## Architecture
@@ -51,6 +52,7 @@ Three disciplines, one repo:
 | API | Playwright `request` | Every push | Same job as E2E |
 | Load (smoke) | k6 | Every push | `k6/smoke.js` — 5 VUs, 30s, p95<2s |
 | Load (full) | k6 | Manual | `k6/load.js` — 100 VUs, 2-min ramp, p95<1s |
+| Visual | Percy | Manual (CI dispatch, requires `PERCY_TOKEN`) | `.percy.yml`, `tests/visual.config.ts` — widths 375/768/1280 |
 
 Playwright config: 2 retries in CI, 1 worker (sequential), HTML report → `playwright-report/`, screenshot on failure, trace on first retry.
 
@@ -83,3 +85,4 @@ Playwright config: 2 retries in CI, 1 worker (sequential), HTML report → `play
 | `CF_ACCESS_TEAM_DOMAIN` | Cloudflare Access team domain (e.g. `myteam.cloudflareaccess.com`) | *(required in prod)* |
 | `CF_ACCESS_AUD` | Cloudflare Access application audience tag | *(required in prod)* |
 | `ADMIN_DEV_BYPASS` | Skip CF Access JWT check in non-production environments | `false` |
+| `PERCY_TOKEN` | Percy project token for visual regression snapshots (CI step is skipped when unset) | *(unset; set as GitHub Actions secret)* |

@@ -51,6 +51,21 @@ export default function () {
     badgeUrl: 'https://github.com',
     reportUrl: '#',
   },
+  {
+    id: 'visual',
+    label: 'Visual Regression',
+    tool: 'Percy',
+    accent: '#10b981',
+    description:
+      'DOM snapshots of the homepage at mobile, tablet, and desktop widths. Pixel diffs surface unintentional layout shifts before they ship — animations are frozen and the globe is masked for determinism.',
+    snippet: `test('home — full page', async ({ page }) => {
+  await page.goto('/')
+  await page.waitForLoadState('networkidle')
+  await percySnapshot(page, 'Home — full page')
+})`,
+    badgeUrl: 'https://github.com',
+    reportUrl: 'https://percy.io/cade7b74/web/fgacic.com-27688392',
+  },
 ]
 
 const cardVariants = {
@@ -97,7 +112,7 @@ export default function TestingShowcase() {
           transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
           style={{ marginBottom: '2.5rem' }}
         >
-          Three test suites live in the same repo as this site and run on every push.
+          Four test suites live in the same repo as this site and run on every push.
           The CI pipeline gates deployment — no green tests, no deploy.
         </motion.p>
 

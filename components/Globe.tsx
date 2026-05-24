@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
+import type { MapLayerMouseEvent } from 'maplibre-gl'
 import type { Project } from '@/lib/projects'
 import { loadGeoJsonHigh, loadGeoJsonLow, loadMaplibreGl } from '@/lib/globePreload'
 import 'maplibre-gl/dist/maplibre-gl.css'
@@ -471,7 +472,7 @@ export default function Globe({
         }
 
         const bindProjectPointer = (layerId: string) => {
-          map.on('mousemove', layerId, (e) => {
+          map.on('mousemove', layerId, (e: MapLayerMouseEvent) => {
             if (!e.features || e.features.length === 0) return
             const iso = e.features[0].properties?.[ISO_KEY] as string | undefined
             if (!iso) return
@@ -482,7 +483,7 @@ export default function Globe({
 
           map.on('mouseleave', layerId, scheduleHoverClear)
 
-          map.on('click', layerId, (e) => {
+          map.on('click', layerId, (e: MapLayerMouseEvent) => {
             if (!e.features || e.features.length === 0) return
             const iso = e.features[0].properties?.[ISO_KEY] as string | undefined
             if (!iso) return
@@ -492,13 +493,13 @@ export default function Globe({
         }
 
         const bindHomePointer = (layerId: string) => {
-          map.on('mousemove', layerId, (e) => {
+          map.on('mousemove', layerId, (e: MapLayerMouseEvent) => {
             applyHomeHover(e.lngLat)
           })
 
           map.on('mouseleave', layerId, scheduleHoverClear)
 
-          map.on('click', layerId, (e) => {
+          map.on('click', layerId, (e: MapLayerMouseEvent) => {
             showHomePopup(map, e.lngLat)
           })
         }
@@ -512,27 +513,27 @@ export default function Globe({
           bindHomePointer(HOME_MARKER_GLOW_LAYER)
           map.on('mouseleave', clearAllHover)
         } else {
-          map.on('click', FILL_HIGHLIGHT_LAYER, (e) => {
+          map.on('click', FILL_HIGHLIGHT_LAYER, (e: MapLayerMouseEvent) => {
             if (!e.features || e.features.length === 0) return
             const iso = e.features[0].properties?.[ISO_KEY] as string | undefined
             if (!iso) return
             const info = countryMap.get(iso)
             if (info) onCountryClickRef.current(info.projectId)
           })
-          map.on('click', HIT_PROJECT_LAYER, (e) => {
+          map.on('click', HIT_PROJECT_LAYER, (e: MapLayerMouseEvent) => {
             if (!e.features || e.features.length === 0) return
             const iso = e.features[0].properties?.[ISO_KEY] as string | undefined
             if (!iso) return
             const info = countryMap.get(iso)
             if (info) onCountryClickRef.current(info.projectId)
           })
-          map.on('click', FILL_HOME_LAYER, (e) => {
+          map.on('click', FILL_HOME_LAYER, (e: MapLayerMouseEvent) => {
             showHomePopup(map, e.lngLat)
           })
-          map.on('click', HIT_HOME_LAYER, (e) => {
+          map.on('click', HIT_HOME_LAYER, (e: MapLayerMouseEvent) => {
             showHomePopup(map, e.lngLat)
           })
-          map.on('click', HOME_MARKER_DOT_LAYER, (e) => {
+          map.on('click', HOME_MARKER_DOT_LAYER, (e: MapLayerMouseEvent) => {
             showHomePopup(map, e.lngLat)
           })
         }
@@ -656,6 +657,7 @@ export default function Globe({
     <div
       ref={containerRef}
       className="globe-canvas"
+      data-percy-hide="globe"
       style={{
         width: '100%',
         aspectRatio: '1 / 1',

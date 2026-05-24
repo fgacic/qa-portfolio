@@ -1,14 +1,17 @@
 name: CI
 
-# Temporarily disabled — auto-trigger removed while focused on other work.
-# Coolify auto-deploys on push independently; this workflow is a QA gate only.
-# Re-enable by restoring the `push` and `pull_request` triggers below.
 on:
+  push:
+    branches: [main, test]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 jobs:
   ci:
     runs-on: ubuntu-latest
+    env:
+      PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
 
     steps:
       - uses: actions/checkout@v4
@@ -43,6 +46,12 @@ jobs:
       - name: Run Playwright tests
         run: yarn playwright test
         working-directory: tests
+        env:
+          BASE_URL: http://localhost:3000
+
+      - name: Run Percy visual snapshots
+        if: ${{ env.PERCY_TOKEN != '' }}
+        run: npx percy exec -- yarn playwright:visual
         env:
           BASE_URL: http://localhost:3000
 

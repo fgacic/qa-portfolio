@@ -40,9 +40,9 @@ export async function loadMaplibre(): Promise<MaplibreModule> {
   return maplibreLoad!
 }
 
-export async function loadMaplibreGl(): Promise<MaplibreModule['default']> {
+export async function loadMaplibreGl(): Promise<MaplibreModule> {
   const mod = await loadMaplibre()
-  return mod.default
+  return (mod as unknown as { default: MaplibreModule }).default
 }
 
 export async function loadGeoJsonLow(): Promise<GeoJson> {
