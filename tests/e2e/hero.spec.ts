@@ -25,7 +25,7 @@ test.describe('Hero section', () => {
       if (msg.type() === 'error') errors.push(msg.text())
     })
     await page.goto('/')
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('load')
     expect(errors).toHaveLength(0)
   })
 

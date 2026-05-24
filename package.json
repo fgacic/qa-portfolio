@@ -4,9 +4,10 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "next dev",
-    "build": "next build && cp -r .next/static .next/standalone/.next/static && cp -r public .next/standalone/public",
+    "build": "next build && cp -r .next/static/. .next/standalone/.next/static/ && cp -r public/. .next/standalone/public/",
     "start": "node .next/standalone/server.js",
     "lint": "next lint",
+    "test":"playwright test",
     "playwright:test": "playwright test --config=tests/playwright.config.ts",
     "playwright:report": "playwright show-report playwright-report",
     "playwright:visual": "playwright test --config=tests/visual.config.ts",

@@ -105,6 +105,36 @@ export default function About() {
           ))}
         </div>
 
+        {/* CV download CTA */}
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-60px' }}
+          custom={6}
+          variants={fadeUp}
+        >
+          <a
+            href="/cv.pdf"
+            download
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.65rem 1.4rem',
+              borderRadius: '0.5rem',
+              border: '1px solid rgba(165, 180, 252, 0.4)',
+              color: '#a5b4fc',
+              fontSize: '0.9rem',
+              fontWeight: 500,
+              textDecoration: 'none',
+              letterSpacing: '0.02em',
+              transition: 'border-color 0.2s, color 0.2s',
+            }}
+          >
+            Download CV
+          </a>
+        </motion.div>
+
       </div>
     </section>
   )
