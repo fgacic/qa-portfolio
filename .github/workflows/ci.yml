@@ -36,15 +36,15 @@ jobs:
       - name: Lint
         run: yarn lint
 
-      - name: Cache Next.js build
+      - name: Cache Next.js build output
+        id: nextjs-build-cache
         uses: actions/cache@v4
         with:
-          path: .next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('yarn.lock') }}-${{ hashFiles('**/*.ts', '**/*.tsx') }}
-          restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('yarn.lock') }}-
+          path: .next
+          key: ${{ runner.os }}-nextjs-build-${{ hashFiles('yarn.lock', 'package.json', 'next.config.ts', 'tsconfig.json', 'next-env.d.ts', 'postcss.config.mjs', 'eslint.config.mjs', 'app/**', 'components/**', 'lib/**', 'emails/**', 'public/**') }}
 
       - name: Build
+        if: steps.nextjs-build-cache.outputs.cache-hit != 'true'
         run: yarn build
 
       - name: Cache Playwright browsers
