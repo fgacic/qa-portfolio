@@ -139,10 +139,10 @@ jobs:
       - name: Deploy to Coolify
         env:
           URL: ${{ secrets.COOLIFY_DEPLOY_URL }}
-          TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
+          TOKEN: ${{ secrets.COOLIFY_GITHUB_API_TOKEN }}
         run: |
           if [ -z "$URL" ] || [ -z "$TOKEN" ]; then
-            echo "::error::COOLIFY_DEPLOY_URL or COOLIFY_API_TOKEN missing in this environment"
+            echo "::error::COOLIFY_DEPLOY_URL or COOLIFY_GITHUB_API_TOKEN missing in this environment"
             exit 1
           fi
           curl -fsS -o /dev/null -H "Authorization: Bearer $TOKEN" "$URL"
