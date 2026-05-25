@@ -99,3 +99,4 @@ Coolify's own GitHub webhook / auto-deploy is **disabled** — Coolify only depl
 | `CF_ACCESS_AUD` | Cloudflare Access application audience tag | *(required in prod)* |
 | `ADMIN_DEV_BYPASS` | Skip CF Access JWT check in non-production environments | `false` |
 | `PERCY_TOKEN` | Percy project token for visual regression snapshots (CI step is skipped when unset) | *(unset; set as GitHub Actions secret)* |
+| `NEXT_PUBLIC_ENABLE_DOWNLOAD_CV` | Feature flag — set to `true` to show the Download CV button in the About section | `false` (hidden) |
