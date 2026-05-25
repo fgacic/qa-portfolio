@@ -16,7 +16,7 @@ const TESTS = [
   await expect(page).toHaveTitle(/QA Engineer/)
 })`,
     badgeUrl: 'https://github.com',
-    reportUrl: '#',
+    reportUrl: 'https://fgacic.github.io/qa-portfolio/playwright-report',
   },
   {
     id: 'api',
@@ -32,7 +32,7 @@ const TESTS = [
   expect(body).toMatchObject({ status: 'ok' })
 })`,
     badgeUrl: 'https://github.com',
-    reportUrl: '#',
+    reportUrl: 'https://fgacic.github.io/qa-portfolio/playwright-report',
   },
   {
     id: 'load',
@@ -49,7 +49,7 @@ export default function () {
   sleep(1)
 }`,
     badgeUrl: 'https://github.com',
-    reportUrl: '#',
+    reportUrl: 'https://github.com/fgacic/qa-portfolio/actions',
   },
   {
     id: 'visual',
@@ -64,7 +64,6 @@ export default function () {
   await percySnapshot(page, 'Home — full page')
 })`,
     badgeUrl: 'https://github.com',
-    reportUrl: 'https://percy.io/cade7b74/web/fgacic.com-27688392',
   },
 ]
 
@@ -232,25 +231,29 @@ export default function TestingShowcase() {
               </pre>
 
               {/* View link */}
-              <a
-                href={t.reportUrl}
-                style={{
-                  display: 'block',
-                  padding: '0.75rem 1.25rem',
-                  borderTop: '1px solid rgba(255,255,255,0.06)',
-                  fontSize: '0.8rem',
-                  color: t.accent,
-                  textDecoration: 'none',
-                  fontWeight: 500,
-                  letterSpacing: '0.03em',
-                  opacity: 0.8,
-                  transition: 'opacity 0.15s',
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.opacity = '1' }}
-                onMouseLeave={(e) => { e.currentTarget.style.opacity = '0.8' }}
-              >
-                View test report →
-              </a>
+              {t.reportUrl && (
+                <a
+                  href={t.reportUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'block',
+                    padding: '0.75rem 1.25rem',
+                    borderTop: '1px solid rgba(255,255,255,0.06)',
+                    fontSize: '0.8rem',
+                    color: t.accent,
+                    textDecoration: 'none',
+                    fontWeight: 500,
+                    letterSpacing: '0.03em',
+                    opacity: 0.8,
+                    transition: 'opacity 0.15s',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.opacity = '1' }}
+                  onMouseLeave={(e) => { e.currentTarget.style.opacity = '0.8' }}
+                >
+                  View test report →
+                </a>
+              )}
             </motion.div>
           ))}
         </div>
