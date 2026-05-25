@@ -137,4 +137,12 @@ jobs:
           destination_dir: ${{ github.ref == 'refs/heads/main' && 'playwright-report' || 'playwright-report-test' }}
 
       - name: Deploy to Coolify
-        run: curl -sf -o /dev/null -X GET "${{ secrets.COOLIFY_DEPLOY_URL }}" -H "Authorization: Bearer ${{ secrets.COOLIFY_API_TOKEN }}"
+        env:
+          URL: ${{ secrets.COOLIFY_DEPLOY_URL }}
+          TOKEN: ${{ secrets.COOLIFY_API_TOKEN }}
+        run: |
+          if [ -z "$URL" ] || [ -z "$TOKEN" ]; then
+            echo "::error::COOLIFY_DEPLOY_URL or COOLIFY_API_TOKEN missing in this environment"
+            exit 1
+          fi
+          curl -fsS -o /dev/null -H "Authorization: Bearer $TOKEN" "$URL"
