@@ -1,9 +1,9 @@
-FROM node:20-alpine AS builder
+FROM node:20.19.1-alpine AS builder
 
 WORKDIR /app
 
 COPY package.json yarn.lock ./
-RUN apk add --no-cache python3 make g++
+RUN apk add --no-cache python3 make g++  # required to build better-sqlite3 native addon
 RUN yarn install --frozen-lockfile
 
 COPY . .
@@ -13,7 +13,7 @@ ENV GIT_BRANCH=$GIT_BRANCH
 
 RUN yarn build
 
-FROM node:20-alpine AS runner
+FROM node:20.19.1-alpine AS runner
 
 WORKDIR /app
 
@@ -37,5 +37,8 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 EXPOSE 3000
 
-ENTRYPOINT ["docker-entrypoint.sh"]
+HEALTHCHECK --interval=10s --timeout=5s --start-period=15s --retries=3 \
+  CMD wget -qO- http://localhost:3000/api/health || exit 1
+
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["node", "server.js"]
