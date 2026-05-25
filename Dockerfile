@@ -7,6 +7,10 @@ RUN apk add --no-cache python3 make g++
 RUN yarn install --frozen-lockfile
 
 COPY . .
+
+ARG GIT_BRANCH=main
+ENV GIT_BRANCH=$GIT_BRANCH
+
 RUN yarn build
 
 FROM node:20-alpine AS runner

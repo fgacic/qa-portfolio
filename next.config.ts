@@ -2,6 +2,7 @@ import { execSync } from 'node:child_process'
 import type { NextConfig } from 'next'
 
 function resolveGitBranch(): string {
+  if (process.env.GIT_BRANCH) return process.env.GIT_BRANCH
   if (process.env.GITHUB_REF_NAME) return process.env.GITHUB_REF_NAME
   try {
     return execSync('git rev-parse --abbrev-ref HEAD', { stdio: ['ignore', 'pipe', 'ignore'] })
