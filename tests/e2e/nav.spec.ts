@@ -27,6 +27,7 @@ test.describe('Page sections', () => {
   })
 
   test('CV download link is present', async ({ page }) => {
+    test.skip(process.env.NEXT_PUBLIC_ENABLE_DOWNLOAD_CV !== 'true', 'NEXT_PUBLIC_ENABLE_DOWNLOAD_CV is not enabled')
     await page.locator('#about').scrollIntoViewIfNeeded()
     const link = page.getByRole('link', { name: /download cv/i })
     await expect(link).toBeVisible()
