@@ -72,7 +72,7 @@ Playwright config: 2 retries in CI, 1 worker (sequential), HTML report → `play
 1. GitHub Actions: lint → build → Playwright tests → k6 smoke → publish Playwright report to GitHub Pages → call Coolify deploy webhook.
 2. Coolify (self-hosted on the Hetzner VPS) receives the webhook only after CI passes, pulls the new commit, rebuilds the Docker image from `Dockerfile`, and rolls the container.
 
-Coolify's own GitHub webhook / auto-deploy is **disabled** — Coolify only deploys when triggered by the CI webhook step. The `COOLIFY_WEBHOOK_URL` secret must be set in GitHub Actions (grab it from the Coolify application settings).
+Coolify's own GitHub webhook / auto-deploy is **disabled** — Coolify only deploys when triggered by the CI webhook step. The `COOLIFY_DEPLOY_URL` (auth-required deploy webhook URL from the Coolify application) and `COOLIFY_GITHUB_API_TOKEN` (API token with `deploy` scope, generated under Keys & Tokens → API Tokens) secrets must be set per GitHub Environment (`Test` and `Prod`).
 
 **Cloudflare layers**:
 - **DNS + proxy (orange-cloud)** — `fgacic.com` and `www` proxy through Cloudflare; TLS terminates at the edge, then re-encrypts to the Hetzner origin. The container itself does not handle TLS.

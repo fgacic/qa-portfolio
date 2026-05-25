@@ -7,6 +7,10 @@ RUN apk add --no-cache python3 make g++
 RUN yarn install --frozen-lockfile
 
 COPY . .
+
+ARG GIT_BRANCH=main
+ENV GIT_BRANCH=$GIT_BRANCH
+
 RUN yarn build
 
 FROM node:20-alpine AS runner
@@ -24,7 +28,7 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
-RUN mkdir -p /app/data
+RUN mkdir -p /app/data && chown -R nextjs:nodejs /app/data
 ENV DATA_DIR=/app/data
 
 USER nextjs
