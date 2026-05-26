@@ -64,6 +64,8 @@ export default function () {
   await percySnapshot(page, 'Home — full page')
 })`,
     badgeUrl: 'https://github.com',
+    reportUrl: 'https://percy.io',
+    reportLabel: 'View visual snapshots →',
   },
 ]
 
@@ -205,7 +207,6 @@ export default function TestingShowcase() {
                   fontSize: '0.85rem',
                   lineHeight: 1.65,
                   color: 'var(--text-muted)',
-                  flex: 1,
                 }}
               >
                 {t.description}
@@ -215,6 +216,7 @@ export default function TestingShowcase() {
               <pre
                 style={{
                   margin: '0 1.25rem 1.25rem',
+                  flex: 1,
                   padding: '1rem',
                   borderRadius: '0.6rem',
                   background: 'rgba(0,0,0,0.35)',
@@ -251,7 +253,7 @@ export default function TestingShowcase() {
                   onMouseEnter={(e) => { e.currentTarget.style.opacity = '1' }}
                   onMouseLeave={(e) => { e.currentTarget.style.opacity = '0.8' }}
                 >
-                  View test report →
+                  {t.reportLabel ?? 'View test report →'}
                 </a>
               )}
             </motion.div>
@@ -259,30 +261,6 @@ export default function TestingShowcase() {
         </div>
       </div>
 
-      {/* Footer */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1, delay: 0.4 }}
-        style={{
-          maxWidth: '64rem',
-          margin: '4rem auto 0',
-          padding: '0 1.5rem',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '0.5rem',
-          borderTop: '1px solid rgba(255,255,255,0.06)',
-          paddingTop: '2rem',
-          fontSize: '0.8rem',
-          color: 'var(--text-muted)',
-          letterSpacing: '0.03em',
-        }}
-      >
-        <span>Filip Gačić · QA Engineer</span>
-      </motion.div>
     </section>
   )
 }
