@@ -105,8 +105,7 @@ export default function About() {
           ))}
         </div>
 
-        {/* CV download CTA — controlled by NEXT_PUBLIC_ENABLE_DOWNLOAD_CV */}
-        {process.env.NEXT_PUBLIC_ENABLE_DOWNLOAD_CV === 'true' && (
+        {process.env.NEXT_PUBLIC_ENABLE_DOWNLOAD_CV !== 'false' && (
           <motion.div
             initial="hidden"
             whileInView="visible"
