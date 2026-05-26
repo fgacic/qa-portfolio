@@ -49,7 +49,7 @@ export default function () {
   sleep(1)
 }`,
     badgeUrl: 'https://github.com',
-    reportUrl: 'https://github.com/fgacic/qa-portfolio/actions',
+    reportUrl: 'https://fgacic.github.io/qa-portfolio/k6-report',
   },
   {
     id: 'visual',
