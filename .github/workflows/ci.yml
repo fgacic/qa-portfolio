@@ -165,6 +165,22 @@ jobs:
           publish_dir: ./playwright-report
           destination_dir: ${{ github.ref == 'refs/heads/main' && 'playwright-report' || 'playwright-report-test' }}
 
+      - name: Download k6 summary
+        uses: actions/download-artifact@v4
+        with:
+          name: k6-summary
+          path: k6-report/
+
+      - name: Rename k6 report to index.html
+        run: mv k6-report/k6-report.html k6-report/index.html
+
+      - name: Publish k6 report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./k6-report
+          destination_dir: ${{ github.ref == 'refs/heads/main' && 'k6-report' || 'k6-report-test' }}
+
       - name: Deploy to Coolify
         env:
           URL: ${{ secrets.COOLIFY_DEPLOY_URL }}

@@ -68,8 +68,9 @@ yarn install
                   ├── Playwright tests (E2E + API)  →  upload HTML report as artifact
                   └── k6 smoke test                 →  upload summary as artifact
 
-On merge to main only:
-  └── Publish Playwright report → GitHub Pages
+On push to main/test:
+  ├── Publish Playwright report → GitHub Pages (playwright-report / playwright-report-test)
+  └── Publish k6 report        → GitHub Pages (k6-report / k6-report-test)
 ```
 
 The full definition is in `.github/workflows/ci.yml`. No external services, no paid integrations.
@@ -159,4 +160,4 @@ k6 run k6/load.js --env BASE_URL=https://fgacic.com
 - [ ] Update GitHub repo URLs in `TestingShowcase.tsx` with real links once pushed
 - [ ] Schedule weekly k6 load run via GitHub Actions cron against live URL
 - [ ] Add Lighthouse CI step for Core Web Vitals regression gating
-- [ ] Wire real Playwright report URL into the Testing Showcase cards
+- [x] Wire real report URLs into the Testing Showcase cards (Playwright + k6 → GitHub Pages)
