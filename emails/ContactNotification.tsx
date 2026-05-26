@@ -77,19 +77,25 @@ function Row({
   small?: boolean
 }) {
   return (
-    <div style={row}>
-      <Text style={rowLabel}>{label}</Text>
-      <Text
-        style={{
-          ...rowValue,
-          fontFamily: mono ? 'ui-monospace, SFMono-Regular, Menlo, monospace' : rowValue.fontFamily,
-          fontSize: small ? 12 : rowValue.fontSize,
-          color: small ? '#6b7280' : rowValue.color,
-        }}
-      >
-        {value}
-      </Text>
-    </div>
+    <table cellPadding={0} cellSpacing={0} style={rowTable}>
+      <tbody>
+        <tr>
+          <td style={rowLabelCell}>{label}</td>
+          <td
+            style={{
+              ...rowValueCell,
+              fontFamily: mono
+                ? 'ui-monospace, SFMono-Regular, Menlo, monospace'
+                : rowValueCell.fontFamily,
+              fontSize: small ? 12 : rowValueCell.fontSize,
+              color: small ? '#6b7280' : rowValueCell.color,
+            }}
+          >
+            {value}
+          </td>
+        </tr>
+      </tbody>
+    </table>
   )
 }
 
@@ -139,28 +145,28 @@ const card: React.CSSProperties = {
   marginBottom: 24,
 }
 
-const row: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'baseline',
-  gap: 16,
-  padding: '6px 0',
+const rowTable: React.CSSProperties = {
+  width: '100%',
+  borderCollapse: 'collapse',
 }
 
-const rowLabel: React.CSSProperties = {
+const rowLabelCell: React.CSSProperties = {
   fontSize: 13,
   color: '#6b7280',
-  margin: 0,
-  flexShrink: 0,
+  padding: '6px 16px 6px 0',
+  verticalAlign: 'baseline',
+  whiteSpace: 'nowrap',
+  width: '1%',
 }
 
-const rowValue: React.CSSProperties = {
+const rowValueCell: React.CSSProperties = {
   fontSize: 14,
   color: '#111827',
   fontWeight: 500,
-  margin: 0,
+  padding: '6px 0',
   textAlign: 'right',
+  verticalAlign: 'baseline',
+  wordBreak: 'break-word',
   fontFamily:
     '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
 }
