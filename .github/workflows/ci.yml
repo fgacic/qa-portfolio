@@ -3,11 +3,14 @@ name: CI
 on:
   push:
     branches: [main, test]
+  schedule:
+    - cron: '0 0 1 * *'
   workflow_dispatch:
 
 jobs:
   ci:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
       packages: write
@@ -76,7 +79,7 @@ jobs:
             ${{ env.IMAGE }}:${{ github.sha }}
 
       - name: Wait for server
-        run: npx wait-on http://localhost:3000 --timeout 30000
+        run: npx wait-on http://localhost:3000 --timeout 60000
 
       - name: Cache Playwright browsers
         uses: actions/cache@v4
@@ -117,14 +120,7 @@ jobs:
           retention-days: 30
 
       - name: Install k6
-        run: |
-          sudo gpg -k
-          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg \
-            --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
-          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" \
-            | sudo tee /etc/apt/sources.list.d/k6.list
-          sudo apt-get update
-          sudo apt-get install k6
+        uses: grafana/setup-k6-action@v1
 
       - name: Run k6 smoke test
         run: k6 run k6/smoke.js
@@ -143,7 +139,7 @@ jobs:
         if: github.event_name != 'pull_request'
         run: |
           docker push ${{ env.IMAGE }}:${{ github.sha }}
-          docker push ${{ env.IMAGE }}:${{ github.ref_name }}
+          docker push ${{ env.IMAGE }}:${{ steps.branch-tag.outputs.value }}
 
   deploy:
     needs: ci
@@ -168,6 +164,22 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./playwright-report
           destination_dir: ${{ github.ref == 'refs/heads/main' && 'playwright-report' || 'playwright-report-test' }}
+
+      - name: Download k6 summary
+        uses: actions/download-artifact@v4
+        with:
+          name: k6-summary
+          path: k6-report/
+
+      - name: Rename k6 report to index.html
+        run: mv k6-report/k6-report.html k6-report/index.html
+
+      - name: Publish k6 report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./k6-report
+          destination_dir: ${{ github.ref == 'refs/heads/main' && 'k6-report' || 'k6-report-test' }}
 
       - name: Deploy to Coolify
         env:

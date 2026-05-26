@@ -16,7 +16,7 @@ const TESTS = [
   await expect(page).toHaveTitle(/QA Engineer/)
 })`,
     badgeUrl: 'https://github.com',
-    reportUrl: '#',
+    reportUrl: 'https://fgacic.github.io/qa-portfolio/playwright-report',
   },
   {
     id: 'api',
@@ -32,7 +32,7 @@ const TESTS = [
   expect(body).toMatchObject({ status: 'ok' })
 })`,
     badgeUrl: 'https://github.com',
-    reportUrl: '#',
+    reportUrl: 'https://fgacic.github.io/qa-portfolio/playwright-report',
   },
   {
     id: 'load',
@@ -49,7 +49,7 @@ export default function () {
   sleep(1)
 }`,
     badgeUrl: 'https://github.com',
-    reportUrl: '#',
+    reportUrl: 'https://fgacic.github.io/qa-portfolio/k6-report',
   },
   {
     id: 'visual',
@@ -64,7 +64,8 @@ export default function () {
   await percySnapshot(page, 'Home — full page')
 })`,
     badgeUrl: 'https://github.com',
-    reportUrl: 'https://percy.io/cade7b74/web/fgacic.com-27688392',
+    reportUrl: 'https://percy.io',
+    reportLabel: 'View visual snapshots →',
   },
 ]
 
@@ -206,7 +207,6 @@ export default function TestingShowcase() {
                   fontSize: '0.85rem',
                   lineHeight: 1.65,
                   color: 'var(--text-muted)',
-                  flex: 1,
                 }}
               >
                 {t.description}
@@ -216,6 +216,7 @@ export default function TestingShowcase() {
               <pre
                 style={{
                   margin: '0 1.25rem 1.25rem',
+                  flex: 1,
                   padding: '1rem',
                   borderRadius: '0.6rem',
                   background: 'rgba(0,0,0,0.35)',
@@ -232,54 +233,34 @@ export default function TestingShowcase() {
               </pre>
 
               {/* View link */}
-              <a
-                href={t.reportUrl}
-                style={{
-                  display: 'block',
-                  padding: '0.75rem 1.25rem',
-                  borderTop: '1px solid rgba(255,255,255,0.06)',
-                  fontSize: '0.8rem',
-                  color: t.accent,
-                  textDecoration: 'none',
-                  fontWeight: 500,
-                  letterSpacing: '0.03em',
-                  opacity: 0.8,
-                  transition: 'opacity 0.15s',
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.opacity = '1' }}
-                onMouseLeave={(e) => { e.currentTarget.style.opacity = '0.8' }}
-              >
-                View test report →
-              </a>
+              {t.reportUrl && (
+                <a
+                  href={t.reportUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'block',
+                    padding: '0.75rem 1.25rem',
+                    borderTop: '1px solid rgba(255,255,255,0.06)',
+                    fontSize: '0.8rem',
+                    color: t.accent,
+                    textDecoration: 'none',
+                    fontWeight: 500,
+                    letterSpacing: '0.03em',
+                    opacity: 0.8,
+                    transition: 'opacity 0.15s',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.opacity = '1' }}
+                  onMouseLeave={(e) => { e.currentTarget.style.opacity = '0.8' }}
+                >
+                  {t.reportLabel ?? 'View test report →'}
+                </a>
+              )}
             </motion.div>
           ))}
         </div>
       </div>
 
-      {/* Footer */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1, delay: 0.4 }}
-        style={{
-          maxWidth: '64rem',
-          margin: '4rem auto 0',
-          padding: '0 1.5rem',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '0.5rem',
-          borderTop: '1px solid rgba(255,255,255,0.06)',
-          paddingTop: '2rem',
-          fontSize: '0.8rem',
-          color: 'var(--text-muted)',
-          letterSpacing: '0.03em',
-        }}
-      >
-        <span>Filip Gačić · QA Engineer</span>
-      </motion.div>
     </section>
   )
 }
