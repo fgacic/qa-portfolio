@@ -63,6 +63,7 @@ export default function Globe({
   const onCountryClickRef = useRef(onCountryClick)
   const [shouldMount, setShouldMount] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const [hasError, setHasError] = useState(false)
 
   const countryMap = useMemo(() => {
     const map = new Map<string, ProjectCountry>()
@@ -134,6 +135,7 @@ export default function Globe({
     let hoverClearTimer: ReturnType<typeof setTimeout> | null = null
 
     ;(async () => {
+     try {
       const [maplibregl, geoLow, geoHigh] = await Promise.all([
         loadMaplibreGl(),
         loadGeoJsonLow(),
@@ -618,6 +620,11 @@ export default function Globe({
         map.remove()
         mapRef.current = null
       }
+     } catch (err) {
+      if (cancelled) return
+      console.error('[Globe] failed to initialise', err)
+      setHasError(true)
+     }
     })()
 
     return () => {
@@ -653,22 +660,47 @@ export default function Globe({
     }
   }, [hoveredProjectId, countryMap])
 
+  const containerStyle = {
+    width: '100%',
+    aspectRatio: '1 / 1',
+    maxWidth: isMobile ? '280px' : '600px',
+    margin: isMobile ? '0 auto 2rem' : '0',
+    borderRadius: '50%',
+    overflow: 'hidden',
+    background: '#0a0a0c',
+    boxShadow:
+      '0 0 0 1px rgba(255,255,255,0.05), 0 30px 80px -20px rgba(99,102,241,0.18)',
+  } as const
+
+  if (hasError) {
+    return (
+      <div
+        className="globe-canvas"
+        data-percy-hide="globe"
+        style={{
+          ...containerStyle,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '2rem',
+          textAlign: 'center',
+        }}
+        role="img"
+        aria-label="Interactive globe unavailable; see project list below"
+      >
+        <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', opacity: 0.7 }}>
+          Globe unavailable
+        </span>
+      </div>
+    )
+  }
+
   return (
     <div
       ref={containerRef}
       className="globe-canvas"
       data-percy-hide="globe"
-      style={{
-        width: '100%',
-        aspectRatio: '1 / 1',
-        maxWidth: isMobile ? '280px' : '600px',
-        margin: isMobile ? '0 auto 2rem' : '0',
-        borderRadius: '50%',
-        overflow: 'hidden',
-        background: '#0a0a0c',
-        boxShadow:
-          '0 0 0 1px rgba(255,255,255,0.05), 0 30px 80px -20px rgba(99,102,241,0.18)',
-      }}
+      style={containerStyle}
       aria-hidden="true"
     />
   )

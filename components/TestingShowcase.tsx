@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'motion/react'
+import { CI_WORKFLOW, K6_REPORT_URL, PERCY_PROJECT_URL, PLAYWRIGHT_REPORT_URL } from '@/lib/links'
 
 const TESTS = [
   {
@@ -15,8 +16,8 @@ const TESTS = [
   await expect(page.locator('h1')).toBeVisible()
   await expect(page).toHaveTitle(/QA Engineer/)
 })`,
-    badgeUrl: 'https://github.com',
-    reportUrl: 'https://fgacic.github.io/qa-portfolio/playwright-report',
+    badgeUrl: CI_WORKFLOW,
+    reportUrl: PLAYWRIGHT_REPORT_URL,
   },
   {
     id: 'api',
@@ -31,8 +32,8 @@ const TESTS = [
   const body = await res.json()
   expect(body).toMatchObject({ status: 'ok' })
 })`,
-    badgeUrl: 'https://github.com',
-    reportUrl: 'https://fgacic.github.io/qa-portfolio/playwright-report',
+    badgeUrl: CI_WORKFLOW,
+    reportUrl: PLAYWRIGHT_REPORT_URL,
   },
   {
     id: 'load',
@@ -48,8 +49,8 @@ export default function () {
   check(res, { 'status 200': (r) => r.status === 200 })
   sleep(1)
 }`,
-    badgeUrl: 'https://github.com',
-    reportUrl: 'https://fgacic.github.io/qa-portfolio/k6-report',
+    badgeUrl: CI_WORKFLOW,
+    reportUrl: K6_REPORT_URL,
   },
   {
     id: 'visual',
@@ -63,8 +64,8 @@ export default function () {
   await page.waitForLoadState('networkidle')
   await percySnapshot(page, 'Home — full page')
 })`,
-    badgeUrl: 'https://github.com',
-    reportUrl: 'https://percy.io',
+    badgeUrl: CI_WORKFLOW,
+    reportUrl: PERCY_PROJECT_URL,
     reportLabel: 'View visual snapshots →',
   },
 ]

@@ -36,7 +36,6 @@ test.describe('Page sections', () => {
 
   test('hero scroll cue navigates to about', async ({ page }) => {
     await page.getByRole('link', { name: /scroll/i }).click()
-    await page.waitForTimeout(600)
     await expect(page.locator('#about')).toBeInViewport()
   })
 })
