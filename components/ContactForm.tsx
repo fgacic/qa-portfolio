@@ -209,7 +209,7 @@ export default function ContactForm() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
             >
-              Message sent — I&apos;ll get back to you soon.
+              Message sent, I&apos;ll get back to you soon.
             </motion.span>
             <motion.span
               aria-hidden="true"

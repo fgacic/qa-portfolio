@@ -84,7 +84,7 @@ export default function Work({ projects }: { projects: Project[] }) {
           transition={{ duration: 0.6, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
           style={{ marginBottom: '2.5rem' }}
         >
-          A selection of products I&apos;ve contributed quality assurance to — across
+          A selection of products I&apos;ve contributed quality assurance across
           Web3, real estate, and enterprise engineering.
         </motion.p>
 

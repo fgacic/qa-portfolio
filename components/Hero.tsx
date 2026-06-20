@@ -5,7 +5,7 @@ import { motion, useReducedMotion } from 'motion/react'
 
 const TITLE = 'Filip Gačić'
 const ROLE = 'QA Engineer'
-const BIO = 'I break things on purpose so users don\'t have to — with Playwright and a lot of coffee.'
+const BIO = 'I break things on purpose so users don\'t have to with Playwright and a lot of coffee.'
 
 const REPULSION_RADIUS = 350
 const MAX_PUSH = 240

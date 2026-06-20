@@ -25,7 +25,7 @@ export default function () {
     })
   }
 
-  // POST /api/contact — 429 is expected under rate-limiting; mark it as non-failure
+  // POST /api/contact  -  429 is expected under rate-limiting; mark it as non-failure
   const contactRes = http.post(
     `${BASE_URL}/api/contact`,
     JSON.stringify({ name: 'k6', email: 'k6@test.com', message: 'Load test message for smoke run.' }),

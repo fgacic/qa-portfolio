@@ -54,8 +54,8 @@ export default function About() {
         >
           QA Engineer with a focus on building automated quality gates that catch
           regressions before they reach users. I work across the full testing
-          pyramid — from fast Playwright E2E suites to API contract tests and k6
-          load scenarios — and I own the CI pipeline that runs them on every push.
+          pyramid from fast Playwright E2E suites to API contract tests and k6
+          load scenarios, I own the CI pipeline that runs them on every push.
         </motion.p>
 
         {/* Stats row */}
@@ -105,7 +105,7 @@ export default function About() {
           ))}
         </div>
 
-        {/* CV download CTA — controlled by NEXT_PUBLIC_ENABLE_DOWNLOAD_CV */}
+        {/* CV download CTA controlled by NEXT_PUBLIC_ENABLE_DOWNLOAD_CV */}
         {process.env.NEXT_PUBLIC_ENABLE_DOWNLOAD_CV === 'true' && (
           <motion.div
             initial="hidden"

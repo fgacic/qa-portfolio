@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 const VALID = { name: 'Test User', email: 'test@example.com', message: 'This is a test message for the contact form.' }
 
-test.describe('API — POST /api/contact', () => {
+test.describe('API  -  POST /api/contact', () => {
   test('returns 200 with valid body', async ({ request }) => {
     const res = await request.post('/api/contact', { data: VALID })
     expect(res.status()).toBe(200)
@@ -63,8 +63,8 @@ test.describe('API — POST /api/contact', () => {
 // regardless of the env var, so CI is always covered. Skip locally when bypassing.
 const skipIfBypass = process.env.ADMIN_DEV_BYPASS === 'true'
 
-test.describe('API — GET /api/contact (CF Access gated)', () => {
-  test.skip(skipIfBypass, 'ADMIN_DEV_BYPASS active — auth bypass enabled')
+test.describe('API  -  GET /api/contact (CF Access gated)', () => {
+  test.skip(skipIfBypass, 'ADMIN_DEV_BYPASS active  -  auth bypass enabled')
 
   test('returns 401 without Cf-Access-Jwt-Assertion header', async ({ request }) => {
     const res = await request.get('/api/contact')

@@ -24,7 +24,7 @@ const TESTS = [
     tool: 'Playwright request',
     accent: '#6366f1',
     description:
-      'Request-level validation of all API routes — status codes, response schemas, error handling, and latency budgets. No browser overhead.',
+      'Request-level validation of all API routes  -  status codes, response schemas, error handling, and latency budgets. No browser overhead.',
     snippet: `test('health endpoint', async ({ request }) => {
   const res = await request.get('/api/health')
   expect(res.status()).toBe(200)
@@ -57,11 +57,11 @@ export default function () {
     tool: 'Percy',
     accent: '#10b981',
     description:
-      'DOM snapshots of the homepage at mobile, tablet, and desktop widths. Pixel diffs surface unintentional layout shifts before they ship — animations are frozen and the globe is masked for determinism.',
-    snippet: `test('home — full page', async ({ page }) => {
+      'DOM snapshots of the homepage at mobile, tablet, and desktop widths. Pixel diffs surface unintentional layout shifts before they ship  -  animations are frozen and the globe is masked for determinism.',
+    snippet: `test('home  -  full page', async ({ page }) => {
   await page.goto('/')
   await page.waitForLoadState('networkidle')
-  await percySnapshot(page, 'Home — full page')
+  await percySnapshot(page, 'Home  -  full page')
 })`,
     badgeUrl: 'https://github.com',
     reportUrl: 'https://percy.io',
@@ -114,7 +114,7 @@ export default function TestingShowcase() {
           style={{ marginBottom: '2.5rem' }}
         >
           Four test suites live in the same repo as this site and run on every push.
-          The CI pipeline gates deployment — no green tests, no deploy.
+          The CI pipeline gates deployment, meaning no green tests, no deploy.
         </motion.p>
 
         <div

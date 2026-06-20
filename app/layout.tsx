@@ -11,7 +11,7 @@ const dmSans = DM_Sans({
 })
 
 export const metadata: Metadata = {
-  title: 'Filip Gačić — QA Engineer',
+  title: 'Filip Gačić, QA Engineer',
   description:
     'QA Engineer portfolio showcasing end-to-end testing with Playwright, API testing, and load & performance testing with k6.',
   keywords: ['QA Engineer', 'Playwright', 'k6', 'E2E testing', 'API testing', 'performance testing'],
