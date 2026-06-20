@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'motion/react'
+import { testIds } from '@/lib/testids'
 
 const SKILLS = [
   { name: 'Playwright', category: 'E2E Testing', accent: '#a855f7', href: 'https://playwright.dev/' },
@@ -30,7 +31,7 @@ const cardVariants = {
 
 export default function Skills() {
   return (
-    <section id="skills" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+    <section id="skills" data-testid={testIds.sections.skills} style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
       <div className="section">
         <motion.p
           className="section-label"

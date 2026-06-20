@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'motion/react'
+import { testIds } from '@/lib/testids'
 
 const TESTS = [
   {
@@ -82,6 +83,7 @@ export default function TestingShowcase() {
   return (
     <section
       id="testing"
+      data-testid={testIds.sections.testing}
       style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingBottom: '6rem' }}
     >
       <div className="section">

@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { testIds } from '@/lib/testids'
 
 test.describe('Hero section', () => {
   test.beforeEach(async ({ page }) => {
@@ -6,14 +7,15 @@ test.describe('Hero section', () => {
   })
 
   test('renders with name and role', async ({ page }) => {
-    await expect(page.locator('h1')).toContainText('Filip Gačić')
-    await expect(page.locator('#hero')).toContainText('QA Engineer')
+    await expect(page.getByTestId(testIds.hero.title)).toContainText('Filip Gačić')
+    await expect(page.getByTestId(testIds.sections.hero)).toContainText('QA Engineer')
   })
 
   test('page has correct title', async ({ page }) => {
     await expect(page).toHaveTitle(/Filip Gačić/)
   })
 
+  // Accessibility assertion: the scroll cue must expose an accessible name and href.
   test('scroll cue link points to about section', async ({ page }) => {
     const cue = page.getByRole('link', { name: /scroll/i })
     await expect(cue).toHaveAttribute('href', '#about')
@@ -31,7 +33,6 @@ test.describe('Hero section', () => {
 
   test('hero is keyboard accessible', async ({ page }) => {
     await page.keyboard.press('Tab')
-    const focused = page.locator(':focus')
-    await expect(focused).toBeVisible()
+    await expect(page.getByTestId(testIds.hero.scrollCue)).toBeFocused()
   })
 })

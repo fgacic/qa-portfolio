@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
+import { testIds } from '@/lib/testids'
 
 const TITLE = 'Filip Gačić'
 const ROLE = 'QA Engineer'
@@ -46,7 +47,7 @@ export default function Hero() {
   }, [reduced])
 
   return (
-    <section id="hero" className="hero-screen screen">
+    <section id="hero" data-testid={testIds.sections.hero} className="hero-screen screen">
       <div className="hero-bg" aria-hidden>
         {BLOB_CLASSES.map((cls, i) => (
           <motion.div
@@ -65,13 +66,14 @@ export default function Hero() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: reduced ? 0 : 0.5, ease: [0.22, 1, 0.36, 1] }}
       >
-        <h1 className="hero-name">{TITLE}</h1>
+        <h1 className="hero-name" data-testid={testIds.hero.title}>{TITLE}</h1>
         <p className="hero-role">{ROLE}</p>
         <p className="hero-bio">{BIO}</p>
 
         <motion.a
           href="#about"
           className="hero-scroll"
+          data-testid={testIds.hero.scrollCue}
           initial={{ opacity: 0 }}
           animate={{ opacity: reduced ? 1 : 0.4 }}
           transition={{ delay: reduced ? 0 : 0.6, duration: 0.8 }}

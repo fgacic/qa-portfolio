@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'motion/react'
+import { testIds } from '@/lib/testids'
 
 const STATS = [
   { value: '5+', label: 'Years in QA' },
@@ -19,7 +20,7 @@ const fadeUp = {
 
 export default function About() {
   return (
-    <section id="about" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+    <section id="about" data-testid={testIds.sections.about} style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
       <div className="section">
         <motion.p
           className="section-label"
