@@ -1,11 +1,4 @@
-const GITHUB_REPO = 'https://github.com/fgacic/qa-portfolio'
-const TRACKED_BRANCHES = ['main', 'test'] as const
-const RAW_BRANCH = process.env.GIT_BRANCH ?? 'main'
-const CI_BRANCH = (TRACKED_BRANCHES as readonly string[]).includes(RAW_BRANCH) ? RAW_BRANCH : 'main'
-const CI_WORKFLOW = `${GITHUB_REPO}/actions/workflows/ci.yml?query=branch%3A${CI_BRANCH}`
-const CI_BADGE = `${GITHUB_REPO}/actions/workflows/ci.yml/badge.svg?branch=${CI_BRANCH}`
-const LINKEDIN = 'https://www.linkedin.com/in/filip-ga%C4%8Di%C4%87-668ab720a/'
-const EMAIL = 'filip.gacic98@gmail.com'
+import { CI_BADGE, CI_WORKFLOW, EMAIL, GITHUB_REPO, LINKEDIN } from '@/lib/links'
 
 const BUILT_WITH = [
   { label: 'Next.js', href: 'https://nextjs.org' },
