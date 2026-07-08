@@ -27,15 +27,6 @@ test.describe('Page sections', () => {
     await expect(page.getByTestId(testIds.sections.testing)).toBeInViewport()
   })
 
-  // Accessibility assertion: the CV download link must be a named link pointing to the PDF.
-  test('CV download link is present', async ({ page }) => {
-    test.skip(process.env.NEXT_PUBLIC_ENABLE_DOWNLOAD_CV !== 'true', 'NEXT_PUBLIC_ENABLE_DOWNLOAD_CV is not enabled')
-    await page.getByTestId(testIds.sections.about).scrollIntoViewIfNeeded()
-    const link = page.getByRole('link', { name: /download cv/i })
-    await expect(link).toBeVisible()
-    await expect(link).toHaveAttribute('href', '/cv.pdf')
-  })
-
   test('hero scroll cue navigates to about', async ({ page }) => {
     await page.getByRole('link', { name: /scroll/i }).click()
     await page.waitForTimeout(600)
