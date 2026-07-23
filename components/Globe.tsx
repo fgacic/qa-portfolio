@@ -32,6 +32,7 @@ export type ProjectCountry = {
   projectId: string
   projectName: string
   accent: string
+  focus?: { center: [number, number]; zoom: number }
 }
 
 interface GlobeProps {
@@ -56,6 +57,8 @@ export default function Globe({
   const lastFrameRef = useRef<number | null>(null)
   const visibleRef = useRef(false)
   const interactionPausedRef = useRef(false)
+  const focusPausedRef = useRef(false)
+  const prefersReducedMotionRef = useRef(false)
   const syncActivityRef = useRef<(() => void) | null>(null)
   const hoveredFeatureIdRef = useRef<string | number | null>(null)
   const externalHoveredIsoRef = useRef<string | null>(null)
@@ -74,6 +77,7 @@ export default function Globe({
           projectId: projectIdOf(p),
           projectName: p.name,
           accent: p.accent,
+          focus: p.focus,
         })
       })
     })
@@ -88,6 +92,14 @@ export default function Globe({
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 1023px)')
     const update = () => setIsMobile(mq.matches)
+    update()
+    mq.addEventListener('change', update)
+    return () => mq.removeEventListener('change', update)
+  }, [])
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const update = () => (prefersReducedMotionRef.current = mq.matches)
     update()
     mq.addEventListener('change', update)
     return () => mq.removeEventListener('change', update)
@@ -551,7 +563,12 @@ export default function Globe({
           if (rafRef.current != null) return
 
           const tick = (t: number) => {
-            if (!mapRef.current || !visibleRef.current || interactionPausedRef.current) {
+            if (
+              !mapRef.current ||
+              !visibleRef.current ||
+              interactionPausedRef.current ||
+              focusPausedRef.current
+            ) {
               stopRotationLoop()
               return
             }
@@ -575,7 +592,7 @@ export default function Globe({
             return
           }
 
-          if (interactionPausedRef.current) stopRotationLoop()
+          if (interactionPausedRef.current || focusPausedRef.current) stopRotationLoop()
           else startRotationLoop()
         }
 
@@ -658,7 +675,45 @@ export default function Globe({
         { hover: true },
       )
     }
-  }, [hoveredProjectId, countryMap])
+
+    // Camera focus follows the hovered project (desktop only). On mobile the
+    // globe stays put — there is no hover and the card list drives navigation.
+    if (isMobile) return
+
+    const focus = next ? countryMap.get(next)?.focus : undefined
+    const reduced = prefersReducedMotionRef.current
+
+    if (focus && !interactionPausedRef.current) {
+      // Hovering a project card: pause the auto-spin and shift/zoom onto its
+      // country. Skipped while the pointer is on the canvas itself, so directly
+      // exploring the globe isn't interrupted by an auto-recenter.
+      focusPausedRef.current = true
+      syncActivityRef.current?.()
+      if (reduced) {
+        map.jumpTo({ center: focus.center, zoom: focus.zoom })
+      } else {
+        map.flyTo({
+          center: focus.center,
+          zoom: focus.zoom,
+          duration: 900,
+          essential: true,
+        })
+      }
+    } else if (!next && focusPausedRef.current) {
+      // Left the project list: zoom back out, then resume spinning where we are.
+      focusPausedRef.current = false
+      if (reduced) {
+        map.jumpTo({ zoom: GLOBE_ZOOM })
+        syncActivityRef.current?.()
+      } else {
+        map.easeTo({ zoom: GLOBE_ZOOM, duration: 700, essential: true })
+        map.once('moveend', () => {
+          // Skip if the user re-focused a project during the zoom-out.
+          if (!focusPausedRef.current) syncActivityRef.current?.()
+        })
+      }
+    }
+  }, [hoveredProjectId, countryMap, isMobile])
 
   const containerStyle = {
     width: '100%',
