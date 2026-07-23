@@ -1,4 +1,4 @@
-import { CI_BADGE, CI_WORKFLOW, EMAIL, GITHUB_REPO, LINKEDIN } from '@/lib/links'
+import { CI_BADGE, CI_WORKFLOW, EMAIL, GITHUB_REPO, LINKEDIN, PERCY_BADGE, PERCY_PROJECT_URL } from '@/lib/links'
 
 const BUILT_WITH = [
   { label: 'Next.js', href: 'https://nextjs.org' },
@@ -26,21 +26,47 @@ export default function Footer() {
         fontSize: '0.875rem',
       }}
     >
-      <a
-        href={CI_WORKFLOW}
-        target="_blank"
-        rel="noreferrer noopener"
-        aria-label="CI build status on GitHub Actions"
-        style={{ display: 'inline-block', lineHeight: 0 }}
+      <div
+        style={{
+          display: 'flex',
+          gap: '0.75rem',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={CI_BADGE}
-          alt="CI status"
-          height={20}
-          style={{ height: '20px', width: 'auto', verticalAlign: 'middle' }}
-        />
-      </a>
+        <a
+          href={CI_WORKFLOW}
+          target="_blank"
+          rel="noreferrer noopener"
+          aria-label="CI build status on GitHub Actions"
+          style={{ display: 'inline-block', lineHeight: 0 }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={CI_BADGE}
+            alt="CI status"
+            height={20}
+            style={{ height: '20px', width: 'auto', verticalAlign: 'middle' }}
+          />
+        </a>
+
+        <a
+          href={PERCY_PROJECT_URL}
+          target="_blank"
+          rel="noreferrer noopener"
+          aria-label="Percy visual regression testing project"
+          style={{ display: 'inline-block', lineHeight: 0 }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={PERCY_BADGE}
+            alt="This project is using Percy.io for visual regression testing"
+            height={20}
+            style={{ height: '20px', width: 'auto', verticalAlign: 'middle' }}
+          />
+        </a>
+      </div>
 
       <nav
         aria-label="Social and contact"

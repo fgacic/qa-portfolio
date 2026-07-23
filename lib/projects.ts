@@ -7,6 +7,16 @@ export interface Project {
   tags: string[]
   accent: string
   countries: string[]
+  /**
+   * Globe camera target used when the project is hovered. `center` is
+   * [lng, lat]; `zoom` frames the country without losing the globe curvature.
+   * Hand-tuned per country rather than derived from GeoJSON centroids, which
+   * misbehave for large countries that cross the antimeridian (e.g. USA/Alaska).
+   */
+  focus?: {
+    center: [number, number]
+    zoom: number
+  }
 }
 
 export const PROJECTS: Project[] = [
@@ -20,6 +30,7 @@ export const PROJECTS: Project[] = [
     tags: ['Web3', 'Playwright', 'Cypress'],
     accent: '#818cf8',
     countries: ['USA'],
+    focus: { center: [-98, 39.5], zoom: 3.2 },
   },
   {
     name: 'Eigen Huis',
@@ -31,6 +42,7 @@ export const PROJECTS: Project[] = [
     tags: ['E2E', 'Accessibility', 'Playwright'],
     accent: '#fb923c',
     countries: ['NLD'],
+    focus: { center: [5.3, 52.2], zoom: 4.6 },
   },
   {
     name: 'Ramboll',
@@ -42,5 +54,6 @@ export const PROJECTS: Project[] = [
     tags: ['CMS', 'Performance', 'Multi-region'],
     accent: '#34d399',
     countries: ['DNK'],
+    focus: { center: [10.4, 56.0], zoom: 4.6 },
   },
 ]

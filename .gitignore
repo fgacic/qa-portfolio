@@ -44,6 +44,7 @@ TODO.md
 # OS
 .DS_Store
 
-# Claude Code (local tooling config — keep out of the public repo)
+# Claude Code (local tooling config; keep out of the public repo)
 CLAUDE.md
 .mcp.json
+.claude/

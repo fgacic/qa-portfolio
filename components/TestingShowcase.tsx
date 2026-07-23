@@ -59,12 +59,13 @@ export default function () {
     tool: 'Percy',
     accent: '#10b981',
     description:
-      'DOM snapshots of the homepage at mobile, tablet, and desktop widths. Pixel diffs surface unintentional layout shifts before they ship  -  animations are frozen and the globe is masked for determinism.',
-    snippet: `test('home  -  full page', async ({ page }) => {
-  await page.goto('/')
-  await page.waitForLoadState('networkidle')
-  await percySnapshot(page, 'Home  -  full page')
-})`,
+      'Per-section and stateful DOM snapshots at mobile, tablet, and desktop widths. Pixel diffs surface unintentional layout shifts before they ship  -  animations are frozen and the globe is masked for determinism.',
+    snippet: `await percySnapshot(page, 'Home / Hero', {
+  scope: sel(testIds.sections.hero),
+})
+// drive the UI into a state, then snapshot
+await page.getByTestId(testIds.contact.submit).click()
+await percySnapshot(page, 'Contact / Validation errors')`,
     badgeUrl: CI_WORKFLOW,
     reportUrl: PERCY_PROJECT_URL,
     reportLabel: 'View visual snapshots →',

@@ -68,8 +68,12 @@ jobs:
             ${{ env.IMAGE }}:${{ steps.branch-tag.outputs.value }}
           build-args: |
             GIT_BRANCH=${{ steps.branch-tag.outputs.value }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          # Store the layer cache in GHCR (unbounded) instead of the 10 GB GHA
+          # cache, which mode=max was blowing past, which evicted the node_modules
+          # and Playwright caches and itself. cache-to is skipped on PRs (no
+          # push auth); cache-from stays readable since the package is public.
+          cache-from: type=registry,ref=${{ env.IMAGE }}:buildcache
+          cache-to: ${{ github.event_name != 'pull_request' && format('type=registry,ref={0}:buildcache,mode=max', env.IMAGE) || '' }}
 
       - name: Start container
         run: |
