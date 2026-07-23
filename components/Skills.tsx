@@ -36,7 +36,7 @@ export default function Skills() {
       <div className="section">
         <motion.p
           className="section-label"
-          initial={reduced ? false : { opacity: 0, y: 20 }}
+          initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
@@ -46,7 +46,7 @@ export default function Skills() {
 
         <motion.h2
           className="section-heading"
-          initial={reduced ? false : { opacity: 0, y: 20 }}
+          initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
@@ -70,7 +70,7 @@ export default function Skills() {
               rel="noopener noreferrer"
               custom={i}
               variants={cardVariants}
-              initial={reduced ? false : 'hidden'}
+              initial={reduced ? 'visible' : 'hidden'}
               whileInView={reduced ? undefined : 'visible'}
               viewport={{ once: true, margin: '-40px' }}
               whileHover={{ y: -4, transition: { duration: 0.2 } }}

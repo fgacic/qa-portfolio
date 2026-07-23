@@ -59,7 +59,7 @@ export default function Work({ projects }: { projects: Project[] }) {
       <div className="section work-section">
         <motion.p
           className="section-label"
-          initial={reduced ? false : { opacity: 0, y: 20 }}
+          initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
@@ -69,7 +69,7 @@ export default function Work({ projects }: { projects: Project[] }) {
 
         <motion.h2
           className="section-heading"
-          initial={reduced ? false : { opacity: 0, y: 20 }}
+          initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
@@ -79,7 +79,7 @@ export default function Work({ projects }: { projects: Project[] }) {
 
         <motion.p
           className="section-body"
-          initial={reduced ? false : { opacity: 0, y: 20 }}
+          initial={reduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.6, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
@@ -106,7 +106,7 @@ export default function Work({ projects }: { projects: Project[] }) {
                   rel="noopener noreferrer"
                   custom={i}
                   variants={cardVariants}
-                  initial={reduced ? false : 'hidden'}
+                  initial={reduced ? 'visible' : 'hidden'}
                   whileInView={reduced ? undefined : 'visible'}
                   viewport={{ once: true, margin: '-40px' }}
                   style={{

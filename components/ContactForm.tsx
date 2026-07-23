@@ -234,7 +234,7 @@ export default function ContactForm() {
       </AnimatePresence>
       <div className="section">
         <motion.div
-          initial={reduced ? false : 'hidden'}
+          initial={reduced ? 'visible' : 'hidden'}
           whileInView={reduced ? undefined : 'visible'}
           viewport={{ once: true, margin: '-60px' }}
           variants={fadeUp}
