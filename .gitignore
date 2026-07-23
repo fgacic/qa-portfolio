@@ -47,3 +47,4 @@ TODO.md
 # Claude Code (local tooling config; keep out of the public repo)
 CLAUDE.md
 .mcp.json
+.claude/
