@@ -79,6 +79,10 @@ Coolify's own GitHub webhook / auto-deploy is **disabled** — Coolify only depl
 - **Zero Trust / Access** — Cloudflare Access policy in front of `/admin` and `/api/admin/*` (and `GET /api/contact`). Unauthenticated requests are intercepted at the edge and redirected to the email-OTP / IdP login before ever hitting the app. The app still verifies the `Cf-Access-Jwt-Assertion` header against `CF_ACCESS_TEAM_DOMAIN` + `CF_ACCESS_AUD` as defence-in-depth. Sign-out goes to `/cdn-cgi/access/logout`.
 - For local admin work without CF Access in front, set `ADMIN_DEV_BYPASS=true` (refused in production).
 
+## Issue Tracking
+
+Issues/tasks for this project are tracked in Linear under the **"qa-portfolio"** team.
+
 ## Key Decisions
 
 - `motion/react` (not `framer-motion`) — avoids webpack CJS conflict in Next.js 15.5+ dev server
