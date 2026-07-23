@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
-import { motion } from 'motion/react'
+import { motion, useReducedMotion } from 'motion/react'
 import type { Project } from '@/lib/projects'
 import { preloadGlobeAssets } from '@/lib/globePreload'
 
@@ -37,6 +37,7 @@ function projectCardSurface(accent: string, isHovered: boolean) {
 
 export default function Work({ projects }: { projects: Project[] }) {
   const [hoveredProjectId, setHoveredProjectId] = useState<string | null>(null)
+  const reduced = useReducedMotion()
 
   useEffect(() => {
     const run = () => preloadGlobeAssets()
@@ -58,8 +59,8 @@ export default function Work({ projects }: { projects: Project[] }) {
       <div className="section work-section">
         <motion.p
           className="section-label"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={reduced ? false : { opacity: 0, y: 20 }}
+          whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
@@ -68,8 +69,8 @@ export default function Work({ projects }: { projects: Project[] }) {
 
         <motion.h2
           className="section-heading"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={reduced ? false : { opacity: 0, y: 20 }}
+          whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
         >
@@ -78,13 +79,13 @@ export default function Work({ projects }: { projects: Project[] }) {
 
         <motion.p
           className="section-body"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={reduced ? false : { opacity: 0, y: 20 }}
+          whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.6, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
           style={{ marginBottom: '2.5rem' }}
         >
-          A selection of products I&apos;ve contributed quality assurance to — across
+          A selection of products I&apos;ve contributed quality assurance across
           Web3, real estate, and enterprise engineering.
         </motion.p>
 
@@ -105,8 +106,8 @@ export default function Work({ projects }: { projects: Project[] }) {
                   rel="noopener noreferrer"
                   custom={i}
                   variants={cardVariants}
-                  initial="hidden"
-                  whileInView="visible"
+                  initial={reduced ? false : 'hidden'}
+                  whileInView={reduced ? undefined : 'visible'}
                   viewport={{ once: true, margin: '-40px' }}
                   style={{
                     display: 'grid',

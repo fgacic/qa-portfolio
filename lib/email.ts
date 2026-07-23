@@ -17,16 +17,16 @@ export async function sendContactNotification(params: {
   id: string
 }) {
   if (process.env.DISABLE_EMAIL === 'true') {
-    console.warn('[email] DISABLE_EMAIL=true — skipping notification')
+    console.warn('[email] DISABLE_EMAIL=true  -  skipping notification')
     return
   }
 
   const apiKey = process.env.RESEND_API_KEY
   if (!apiKey) {
     if (process.env.NODE_ENV === 'production') {
-      throw new Error('RESEND_API_KEY is not set — contact notifications will not work')
+      throw new Error('RESEND_API_KEY is not set  -  contact notifications will not work')
     }
-    console.warn('[email] RESEND_API_KEY is not set — emails will not be sent in dev')
+    console.warn('[email] RESEND_API_KEY is not set  -  emails will not be sent in dev')
     return
   }
 

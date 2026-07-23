@@ -68,14 +68,14 @@ export default function SubmissionRow({ submission }: { submission: Submission }
             {submission.readAt === null && (
               <button
                 onClick={handleMarkRead}
-                className="text-xs text-[#8a8699] hover:text-[#e8e6f0] transition-colors"
+                className="text-xs px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 text-[#8a8699] shadow-sm hover:bg-white/10 hover:text-[#e8e6f0] hover:shadow-md transition-all"
               >
                 Mark read
               </button>
             )}
             <button
               onClick={handleDelete}
-              className="text-xs text-red-400/70 hover:text-red-400 transition-colors"
+              className="text-xs px-3 py-1.5 rounded-lg border border-red-400/20 bg-red-400/10 text-red-400/80 shadow-sm hover:bg-red-400/20 hover:text-red-400 hover:shadow-md transition-all"
             >
               Delete
             </button>

@@ -1,6 +1,7 @@
 'use client'
 
-import { motion } from 'motion/react'
+import { motion, useReducedMotion } from 'motion/react'
+import { testIds } from '@/lib/testids'
 
 const SKILLS = [
   { name: 'Playwright', category: 'E2E Testing', accent: '#a855f7', href: 'https://playwright.dev/' },
@@ -29,13 +30,14 @@ const cardVariants = {
 }
 
 export default function Skills() {
+  const reduced = useReducedMotion()
   return (
-    <section id="skills" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+    <section id="skills" data-testid={testIds.sections.skills} style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
       <div className="section">
         <motion.p
           className="section-label"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={reduced ? false : { opacity: 0, y: 20 }}
+          whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
@@ -44,8 +46,8 @@ export default function Skills() {
 
         <motion.h2
           className="section-heading"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={reduced ? false : { opacity: 0, y: 20 }}
+          whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
         >
@@ -68,8 +70,8 @@ export default function Skills() {
               rel="noopener noreferrer"
               custom={i}
               variants={cardVariants}
-              initial="hidden"
-              whileInView="visible"
+              initial={reduced ? false : 'hidden'}
+              whileInView={reduced ? undefined : 'visible'}
               viewport={{ once: true, margin: '-40px' }}
               whileHover={{ y: -4, transition: { duration: 0.2 } }}
               style={{

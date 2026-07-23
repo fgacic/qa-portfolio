@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-test.describe('API — GET /api/projects', () => {
+test.describe('API  -  GET /api/projects', () => {
   test('returns 200', async ({ request }) => {
     const res = await request.get('/api/projects')
     expect(res.status()).toBe(200)

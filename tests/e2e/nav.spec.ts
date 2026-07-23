@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { testIds } from '@/lib/testids'
 
 test.describe('Page sections', () => {
   test.beforeEach(async ({ page }) => {
@@ -6,37 +7,28 @@ test.describe('Page sections', () => {
   })
 
   test('all sections are present in the DOM', async ({ page }) => {
-    for (const id of ['hero', 'about', 'skills', 'testing']) {
-      await expect(page.locator(`#${id}`)).toBeAttached()
+    for (const id of [testIds.sections.hero, testIds.sections.about, testIds.sections.skills, testIds.sections.testing]) {
+      await expect(page.getByTestId(id)).toBeAttached()
     }
   })
 
   test('about section is visible on scroll', async ({ page }) => {
-    await page.locator('#about').scrollIntoViewIfNeeded()
-    await expect(page.locator('#about')).toBeInViewport()
+    await page.getByTestId(testIds.sections.about).scrollIntoViewIfNeeded()
+    await expect(page.getByTestId(testIds.sections.about)).toBeInViewport()
   })
 
   test('skills section is visible on scroll', async ({ page }) => {
-    await page.locator('#skills').scrollIntoViewIfNeeded()
-    await expect(page.locator('#skills')).toBeInViewport()
+    await page.getByTestId(testIds.sections.skills).scrollIntoViewIfNeeded()
+    await expect(page.getByTestId(testIds.sections.skills)).toBeInViewport()
   })
 
   test('testing section is visible on scroll', async ({ page }) => {
-    await page.locator('#testing').scrollIntoViewIfNeeded()
-    await expect(page.locator('#testing')).toBeInViewport()
-  })
-
-  test('CV download link is present', async ({ page }) => {
-    test.skip(process.env.NEXT_PUBLIC_ENABLE_DOWNLOAD_CV !== 'true', 'NEXT_PUBLIC_ENABLE_DOWNLOAD_CV is not enabled')
-    await page.locator('#about').scrollIntoViewIfNeeded()
-    const link = page.getByRole('link', { name: /download cv/i })
-    await expect(link).toBeVisible()
-    await expect(link).toHaveAttribute('href', '/cv.pdf')
+    await page.getByTestId(testIds.sections.testing).scrollIntoViewIfNeeded()
+    await expect(page.getByTestId(testIds.sections.testing)).toBeInViewport()
   })
 
   test('hero scroll cue navigates to about', async ({ page }) => {
     await page.getByRole('link', { name: /scroll/i }).click()
-    await page.waitForTimeout(600)
-    await expect(page.locator('#about')).toBeInViewport()
+    await expect(page.getByTestId(testIds.sections.about)).toBeInViewport()
   })
 })

@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { AnimatePresence, motion } from 'motion/react'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import isEmail from 'validator/lib/isEmail'
+import { testIds } from '@/lib/testids'
 
 type Status = 'idle' | 'submitting' | 'success' | 'rateLimit' | 'error'
 
@@ -55,6 +56,7 @@ export default function ContactForm() {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [status, setStatus] = useState<Status>('idle')
   const [toastVisible, setToastVisible] = useState(false)
+  const reduced = useReducedMotion()
 
   useEffect(() => {
     if (status !== 'success') return
@@ -134,12 +136,13 @@ export default function ContactForm() {
   }
 
   return (
-    <section id="contact" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+    <section id="contact" data-testid={testIds.sections.contact} style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
       <AnimatePresence>
         {toastVisible && (
           <motion.div
             role="status"
             aria-live="polite"
+            data-testid={testIds.contact.toast}
             initial={{ opacity: 0, y: -24, scale: 0.92 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -16, scale: 0.96 }}
@@ -209,7 +212,7 @@ export default function ContactForm() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
             >
-              Message sent — I&apos;ll get back to you soon.
+              Message sent, I&apos;ll get back to you soon.
             </motion.span>
             <motion.span
               aria-hidden="true"
@@ -231,8 +234,8 @@ export default function ContactForm() {
       </AnimatePresence>
       <div className="section">
         <motion.div
-          initial="hidden"
-          whileInView="visible"
+          initial={reduced ? false : 'hidden'}
+          whileInView={reduced ? undefined : 'visible'}
           viewport={{ once: true, margin: '-60px' }}
           variants={fadeUp}
         >
@@ -246,6 +249,7 @@ export default function ContactForm() {
 
           {status === 'rateLimit' && (
             <div
+              data-testid={testIds.contact.rateLimitBanner}
               style={{
                 padding: '1rem 1.25rem',
                 borderRadius: '0.75rem',
@@ -262,6 +266,7 @@ export default function ContactForm() {
 
           {status === 'error' && (
             <div
+              data-testid={testIds.contact.errorBanner}
               style={{
                 padding: '1rem 1.25rem',
                 borderRadius: '0.75rem',
@@ -279,6 +284,7 @@ export default function ContactForm() {
           <form
             onSubmit={handleSubmit}
             noValidate
+            data-testid={testIds.contact.form}
             style={{
               display: 'flex',
               flexDirection: 'column',
@@ -308,6 +314,7 @@ export default function ContactForm() {
               </label>
               <input
                 id="contact-name"
+                data-testid={testIds.contact.nameInput}
                 type="text"
                 name="name"
                 value={fields.name}
@@ -321,7 +328,7 @@ export default function ContactForm() {
                 autoComplete="name"
               />
               {errors.name && (
-                <p style={{ margin: '0.25rem 0 0', fontSize: '0.8rem', color: 'rgba(248,113,113,0.9)' }}>
+                <p data-testid={testIds.contact.nameError} style={{ margin: '0.25rem 0 0', fontSize: '0.8rem', color: 'rgba(248,113,113,0.9)' }}>
                   {errors.name}
                 </p>
               )}
@@ -345,6 +352,7 @@ export default function ContactForm() {
               </label>
               <input
                 id="contact-email"
+                data-testid={testIds.contact.emailInput}
                 type="email"
                 name="email"
                 value={fields.email}
@@ -358,7 +366,7 @@ export default function ContactForm() {
                 autoComplete="email"
               />
               {errors.email && (
-                <p style={{ margin: '0.25rem 0 0', fontSize: '0.8rem', color: 'rgba(248,113,113,0.9)' }}>
+                <p data-testid={testIds.contact.emailError} style={{ margin: '0.25rem 0 0', fontSize: '0.8rem', color: 'rgba(248,113,113,0.9)' }}>
                   {errors.email}
                 </p>
               )}
@@ -382,6 +390,7 @@ export default function ContactForm() {
               </label>
               <textarea
                 id="contact-message"
+                data-testid={testIds.contact.messageInput}
                 name="message"
                 rows={5}
                 maxLength={500}
@@ -397,6 +406,7 @@ export default function ContactForm() {
                 }}
               />
               <p
+                data-testid={testIds.contact.charCount}
                 style={{
                   margin: '0.25rem 0 0',
                   fontSize: '0.75rem',
@@ -408,7 +418,7 @@ export default function ContactForm() {
                 {fields.message.length} / 500
               </p>
               {errors.message && (
-                <p style={{ margin: '0.25rem 0 0', fontSize: '0.8rem', color: 'rgba(248,113,113,0.9)' }}>
+                <p data-testid={testIds.contact.messageError} style={{ margin: '0.25rem 0 0', fontSize: '0.8rem', color: 'rgba(248,113,113,0.9)' }}>
                   {errors.message}
                 </p>
               )}
@@ -418,6 +428,7 @@ export default function ContactForm() {
             <div>
               <button
                 type="submit"
+                data-testid={testIds.contact.submit}
                 disabled={status === 'submitting'}
                 style={{
                   display: 'inline-flex',

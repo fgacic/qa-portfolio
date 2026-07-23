@@ -17,7 +17,7 @@ try {
     if (!(key in process.env)) process.env[key] = value
   }
 } catch {
-  // .env not present — CI will have vars set via environment
+  // .env not present  -  CI will have vars set via environment
 }
 
 const BASE_URL = process.env.BASE_URL ?? 'http://localhost:3000'
@@ -34,7 +34,7 @@ export default defineConfig({
   ],
   use: {
     baseURL: BASE_URL,
-    trace: 'on',
+    trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
   projects: [

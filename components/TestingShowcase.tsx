@@ -1,6 +1,8 @@
 'use client'
 
-import { motion } from 'motion/react'
+import { motion, useReducedMotion } from 'motion/react'
+import { testIds } from '@/lib/testids'
+import { CI_WORKFLOW, K6_REPORT_URL, PERCY_PROJECT_URL, PLAYWRIGHT_REPORT_URL } from '@/lib/links'
 
 const TESTS = [
   {
@@ -15,8 +17,8 @@ const TESTS = [
   await expect(page.locator('h1')).toBeVisible()
   await expect(page).toHaveTitle(/QA Engineer/)
 })`,
-    badgeUrl: 'https://github.com',
-    reportUrl: 'https://fgacic.github.io/qa-portfolio/playwright-report',
+    badgeUrl: CI_WORKFLOW,
+    reportUrl: PLAYWRIGHT_REPORT_URL,
   },
   {
     id: 'api',
@@ -24,15 +26,15 @@ const TESTS = [
     tool: 'Playwright request',
     accent: '#6366f1',
     description:
-      'Request-level validation of all API routes — status codes, response schemas, error handling, and latency budgets. No browser overhead.',
+      'Request-level validation of all API routes  -  status codes, response schemas, error handling, and latency budgets. No browser overhead.',
     snippet: `test('health endpoint', async ({ request }) => {
   const res = await request.get('/api/health')
   expect(res.status()).toBe(200)
   const body = await res.json()
   expect(body).toMatchObject({ status: 'ok' })
 })`,
-    badgeUrl: 'https://github.com',
-    reportUrl: 'https://fgacic.github.io/qa-portfolio/playwright-report',
+    badgeUrl: CI_WORKFLOW,
+    reportUrl: PLAYWRIGHT_REPORT_URL,
   },
   {
     id: 'load',
@@ -48,8 +50,8 @@ export default function () {
   check(res, { 'status 200': (r) => r.status === 200 })
   sleep(1)
 }`,
-    badgeUrl: 'https://github.com',
-    reportUrl: 'https://fgacic.github.io/qa-portfolio/k6-report',
+    badgeUrl: CI_WORKFLOW,
+    reportUrl: K6_REPORT_URL,
   },
   {
     id: 'visual',
@@ -57,14 +59,14 @@ export default function () {
     tool: 'Percy',
     accent: '#10b981',
     description:
-      'DOM snapshots of the homepage at mobile, tablet, and desktop widths. Pixel diffs surface unintentional layout shifts before they ship — animations are frozen and the globe is masked for determinism.',
-    snippet: `test('home — full page', async ({ page }) => {
+      'DOM snapshots of the homepage at mobile, tablet, and desktop widths. Pixel diffs surface unintentional layout shifts before they ship  -  animations are frozen and the globe is masked for determinism.',
+    snippet: `test('home  -  full page', async ({ page }) => {
   await page.goto('/')
   await page.waitForLoadState('networkidle')
-  await percySnapshot(page, 'Home — full page')
+  await percySnapshot(page, 'Home  -  full page')
 })`,
-    badgeUrl: 'https://github.com',
-    reportUrl: 'https://percy.io',
+    badgeUrl: CI_WORKFLOW,
+    reportUrl: PERCY_PROJECT_URL,
     reportLabel: 'View visual snapshots →',
   },
 ]
@@ -79,16 +81,18 @@ const cardVariants = {
 }
 
 export default function TestingShowcase() {
+  const reduced = useReducedMotion()
   return (
     <section
       id="testing"
+      data-testid={testIds.sections.testing}
       style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingBottom: '6rem' }}
     >
       <div className="section">
         <motion.p
           className="section-label"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={reduced ? false : { opacity: 0, y: 20 }}
+          whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
@@ -97,8 +101,8 @@ export default function TestingShowcase() {
 
         <motion.h2
           className="section-heading"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={reduced ? false : { opacity: 0, y: 20 }}
+          whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
         >
@@ -107,14 +111,14 @@ export default function TestingShowcase() {
 
         <motion.p
           className="section-body"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={reduced ? false : { opacity: 0, y: 20 }}
+          whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
           style={{ marginBottom: '2.5rem' }}
         >
           Four test suites live in the same repo as this site and run on every push.
-          The CI pipeline gates deployment — no green tests, no deploy.
+          The CI pipeline gates deployment, meaning no green tests, no deploy.
         </motion.p>
 
         <div
@@ -129,8 +133,8 @@ export default function TestingShowcase() {
               key={t.id}
               custom={i}
               variants={cardVariants}
-              initial="hidden"
-              whileInView="visible"
+              initial={reduced ? false : 'hidden'}
+              whileInView={reduced ? undefined : 'visible'}
               viewport={{ once: true, margin: '-40px' }}
               style={{
                 borderRadius: '1rem',
