@@ -11,6 +11,13 @@ const STEPS = [
     accent: '#ec4899',
   },
   {
+    verb: 'Run',
+    tool: 'Playwright CLI',
+    href: 'https://playwright.dev/docs/test-cli',
+    body: 'Execute the suite locally and in CI — sharding, retries, traces, and a shareable HTML report on every run.',
+    accent: '#34d399',
+  },
+  {
     verb: 'Review',
     tool: 'Claude Code (CLI)',
     href: 'https://claude.com/claude-code',
