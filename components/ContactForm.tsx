@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { AnimatePresence, motion } from 'motion/react'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import isEmail from 'validator/lib/isEmail'
 import { testIds } from '@/lib/testids'
 
@@ -56,6 +56,7 @@ export default function ContactForm() {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [status, setStatus] = useState<Status>('idle')
   const [toastVisible, setToastVisible] = useState(false)
+  const reduced = useReducedMotion()
 
   useEffect(() => {
     if (status !== 'success') return
@@ -233,8 +234,8 @@ export default function ContactForm() {
       </AnimatePresence>
       <div className="section">
         <motion.div
-          initial="hidden"
-          whileInView="visible"
+          initial={reduced ? false : 'hidden'}
+          whileInView={reduced ? undefined : 'visible'}
           viewport={{ once: true, margin: '-60px' }}
           variants={fadeUp}
         >

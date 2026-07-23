@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'motion/react'
+import { motion, useReducedMotion } from 'motion/react'
 import { testIds } from '@/lib/testids'
 
 const STATS = [
@@ -19,13 +19,14 @@ const fadeUp = {
 }
 
 export default function About() {
+  const reduced = useReducedMotion()
   return (
     <section id="about" data-testid={testIds.sections.about} style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
       <div className="section">
         <motion.p
           className="section-label"
-          initial="hidden"
-          whileInView="visible"
+          initial={reduced ? false : 'hidden'}
+          whileInView={reduced ? undefined : 'visible'}
           viewport={{ once: true, margin: '-60px' }}
           custom={0}
           variants={fadeUp}
@@ -35,8 +36,8 @@ export default function About() {
 
         <motion.h2
           className="section-heading"
-          initial="hidden"
-          whileInView="visible"
+          initial={reduced ? false : 'hidden'}
+          whileInView={reduced ? undefined : 'visible'}
           viewport={{ once: true, margin: '-60px' }}
           custom={1}
           variants={fadeUp}
@@ -46,8 +47,8 @@ export default function About() {
 
         <motion.p
           className="section-body"
-          initial="hidden"
-          whileInView="visible"
+          initial={reduced ? false : 'hidden'}
+          whileInView={reduced ? undefined : 'visible'}
           viewport={{ once: true, margin: '-60px' }}
           custom={2}
           variants={fadeUp}
@@ -71,8 +72,8 @@ export default function About() {
           {STATS.map((stat, i) => (
             <motion.div
               key={stat.label}
-              initial="hidden"
-              whileInView="visible"
+              initial={reduced ? false : 'hidden'}
+              whileInView={reduced ? undefined : 'visible'}
               viewport={{ once: true, margin: '-60px' }}
               custom={3 + i}
               variants={fadeUp}
@@ -109,8 +110,8 @@ export default function About() {
         {/* CV download CTA controlled by NEXT_PUBLIC_ENABLE_DOWNLOAD_CV */}
         {process.env.NEXT_PUBLIC_ENABLE_DOWNLOAD_CV === 'true' && (
           <motion.div
-            initial="hidden"
-            whileInView="visible"
+            initial={reduced ? false : 'hidden'}
+            whileInView={reduced ? undefined : 'visible'}
             viewport={{ once: true, margin: '-60px' }}
             custom={6}
             variants={fadeUp}

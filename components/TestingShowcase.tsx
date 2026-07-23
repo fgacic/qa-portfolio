@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'motion/react'
+import { motion, useReducedMotion } from 'motion/react'
 import { testIds } from '@/lib/testids'
 import { CI_WORKFLOW, K6_REPORT_URL, PERCY_PROJECT_URL, PLAYWRIGHT_REPORT_URL } from '@/lib/links'
 
@@ -81,6 +81,7 @@ const cardVariants = {
 }
 
 export default function TestingShowcase() {
+  const reduced = useReducedMotion()
   return (
     <section
       id="testing"
@@ -90,8 +91,8 @@ export default function TestingShowcase() {
       <div className="section">
         <motion.p
           className="section-label"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={reduced ? false : { opacity: 0, y: 20 }}
+          whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
@@ -100,8 +101,8 @@ export default function TestingShowcase() {
 
         <motion.h2
           className="section-heading"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={reduced ? false : { opacity: 0, y: 20 }}
+          whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
         >
@@ -110,8 +111,8 @@ export default function TestingShowcase() {
 
         <motion.p
           className="section-body"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={reduced ? false : { opacity: 0, y: 20 }}
+          whileInView={reduced ? undefined : { opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
           style={{ marginBottom: '2.5rem' }}
@@ -132,8 +133,8 @@ export default function TestingShowcase() {
               key={t.id}
               custom={i}
               variants={cardVariants}
-              initial="hidden"
-              whileInView="visible"
+              initial={reduced ? false : 'hidden'}
+              whileInView={reduced ? undefined : 'visible'}
               viewport={{ once: true, margin: '-40px' }}
               style={{
                 borderRadius: '1rem',

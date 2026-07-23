@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'motion/react'
+import { motion, useReducedMotion } from 'motion/react'
 
 const STEPS = [
   {
@@ -46,13 +46,14 @@ const stepVariants = {
 }
 
 export default function AIWorkflow() {
+  const reduced = useReducedMotion()
   return (
     <section id="ai-workflow" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
       <div className="section">
         <motion.p
           className="section-label"
-          initial="hidden"
-          whileInView="visible"
+          initial={reduced ? false : 'hidden'}
+          whileInView={reduced ? undefined : 'visible'}
           viewport={{ once: true, margin: '-60px' }}
           custom={0}
           variants={fadeUp}
@@ -62,8 +63,8 @@ export default function AIWorkflow() {
 
         <motion.h2
           className="section-heading"
-          initial="hidden"
-          whileInView="visible"
+          initial={reduced ? false : 'hidden'}
+          whileInView={reduced ? undefined : 'visible'}
           viewport={{ once: true, margin: '-60px' }}
           custom={1}
           variants={fadeUp}
@@ -73,8 +74,8 @@ export default function AIWorkflow() {
 
         <motion.p
           className="section-body"
-          initial="hidden"
-          whileInView="visible"
+          initial={reduced ? false : 'hidden'}
+          whileInView={reduced ? undefined : 'visible'}
           viewport={{ once: true, margin: '-60px' }}
           custom={2}
           variants={fadeUp}
@@ -102,8 +103,8 @@ export default function AIWorkflow() {
               rel="noopener noreferrer"
               custom={i}
               variants={stepVariants}
-              initial="hidden"
-              whileInView="visible"
+              initial={reduced ? false : 'hidden'}
+              whileInView={reduced ? undefined : 'visible'}
               viewport={{ once: true, margin: '-40px' }}
               whileHover={{ y: -4, transition: { duration: 0.2 } }}
               style={{
@@ -168,8 +169,8 @@ export default function AIWorkflow() {
         </div>
 
         <motion.p
-          initial="hidden"
-          whileInView="visible"
+          initial={reduced ? false : 'hidden'}
+          whileInView={reduced ? undefined : 'visible'}
           viewport={{ once: true, margin: '-60px' }}
           custom={5}
           variants={fadeUp}
