@@ -7,21 +7,21 @@ const STEPS = [
     verb: 'Generate',
     tool: 'Playwright MCP',
     href: 'https://github.com/microsoft/playwright-mcp',
-    body: 'Draft Playwright specs and ticket scaffolding straight from intent — which I then own, prune, and harden.',
+    body: 'Draft Playwright specs and ticket scaffolding straight from intent. I then own, prune, and harden every line.',
     accent: '#ec4899',
   },
   {
     verb: 'Run',
     tool: 'Playwright CLI',
     href: 'https://playwright.dev/docs/test-cli',
-    body: 'Execute the suite locally and in CI — sharding, retries, traces, and a shareable HTML report on every run.',
+    body: 'Execute the suite locally and in CI, with sharding, retries, traces, and a shareable HTML report on every run.',
     accent: '#34d399',
   },
   {
     verb: 'Review',
     tool: 'Claude Code (CLI)',
     href: 'https://claude.com/claude-code',
-    body: 'A first-pass review on every change before mine — catching the obvious before it reaches a human reviewer.',
+    body: 'A first-pass review on every change before mine, catching the obvious before it reaches a human reviewer.',
     accent: '#22d3ee',
   },
   {
@@ -88,7 +88,7 @@ export default function AIWorkflow() {
           variants={fadeUp}
           style={{ marginBottom: '2.5rem' }}
         >
-          I treat frontier AI tooling the way I treat any test infrastructure — as
+          I treat frontier AI tooling the way I treat any test infrastructure:
           leverage, with a human owning the verdict. It sits inside my daily QA loop,
           not around it: generating coverage, reviewing every change, and chasing down
           failures faster than I could alone.
@@ -191,7 +191,7 @@ export default function AIWorkflow() {
           }}
         >
           The Playwright suite and CI you&apos;re looking at were authored in exactly
-          this loop — generated, reviewed, and triaged with these tools, then signed
+          this loop: generated, reviewed, and triaged with these tools, then signed
           off by me.
         </motion.p>
       </div>

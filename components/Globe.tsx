@@ -677,7 +677,7 @@ export default function Globe({
     }
 
     // Camera focus follows the hovered project (desktop only). On mobile the
-    // globe stays put — there is no hover and the card list drives navigation.
+    // globe stays put. There is no hover, so the card list drives navigation.
     if (isMobile) return
 
     const focus = next ? countryMap.get(next)?.focus : undefined

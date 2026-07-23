@@ -40,7 +40,7 @@ test.describe('Visual  -  contact form', () => {
   test('validation errors', async ({ page }) => {
     await gotoHome(page)
     // Submit an empty form: client-side validation renders inline errors,
-    // no network involved — fully deterministic.
+    // no network involved, so it is fully deterministic.
     await page.getByTestId(testIds.contact.submit).click()
     await page.getByTestId(testIds.contact.messageError).waitFor()
     await percySnapshot(page, 'Contact / Validation errors', {

@@ -69,7 +69,7 @@ jobs:
           build-args: |
             GIT_BRANCH=${{ steps.branch-tag.outputs.value }}
           # Store the layer cache in GHCR (unbounded) instead of the 10 GB GHA
-          # cache, which mode=max was blowing past — evicting the node_modules
+          # cache, which mode=max was blowing past, which evicted the node_modules
           # and Playwright caches and itself. cache-to is skipped on PRs (no
           # push auth); cache-from stays readable since the package is public.
           cache-from: type=registry,ref=${{ env.IMAGE }}:buildcache
