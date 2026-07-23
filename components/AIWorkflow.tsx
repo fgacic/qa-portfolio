@@ -52,7 +52,7 @@ export default function AIWorkflow() {
       <div className="section">
         <motion.p
           className="section-label"
-          initial={reduced ? false : 'hidden'}
+          initial={reduced ? 'visible' : 'hidden'}
           whileInView={reduced ? undefined : 'visible'}
           viewport={{ once: true, margin: '-60px' }}
           custom={0}
@@ -63,7 +63,7 @@ export default function AIWorkflow() {
 
         <motion.h2
           className="section-heading"
-          initial={reduced ? false : 'hidden'}
+          initial={reduced ? 'visible' : 'hidden'}
           whileInView={reduced ? undefined : 'visible'}
           viewport={{ once: true, margin: '-60px' }}
           custom={1}
@@ -74,7 +74,7 @@ export default function AIWorkflow() {
 
         <motion.p
           className="section-body"
-          initial={reduced ? false : 'hidden'}
+          initial={reduced ? 'visible' : 'hidden'}
           whileInView={reduced ? undefined : 'visible'}
           viewport={{ once: true, margin: '-60px' }}
           custom={2}
@@ -103,7 +103,7 @@ export default function AIWorkflow() {
               rel="noopener noreferrer"
               custom={i}
               variants={stepVariants}
-              initial={reduced ? false : 'hidden'}
+              initial={reduced ? 'visible' : 'hidden'}
               whileInView={reduced ? undefined : 'visible'}
               viewport={{ once: true, margin: '-40px' }}
               whileHover={{ y: -4, transition: { duration: 0.2 } }}
@@ -169,7 +169,7 @@ export default function AIWorkflow() {
         </div>
 
         <motion.p
-          initial={reduced ? false : 'hidden'}
+          initial={reduced ? 'visible' : 'hidden'}
           whileInView={reduced ? undefined : 'visible'}
           viewport={{ once: true, margin: '-60px' }}
           custom={5}
