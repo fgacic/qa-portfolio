@@ -1,14 +1,35 @@
 import { NextRequest } from 'next/server'
 import isEmail from 'validator/lib/isEmail'
-import { insertSubmission, getAllSubmissions, type Submission } from '@/lib/db'
-import { checkRateLimit } from '@/lib/rateLimit'
 import { sendContactNotification } from '@/lib/email'
-import { requireCfAccess } from '@/lib/cfAccess'
+
+const TEST_SECRET = '1x0000000000000000000000000000000AA'
+
+async function verifyTurnstile(token: unknown): Promise<boolean> {
+  if (typeof token !== 'string' || token.length === 0 || token.length > 2048) return false
+
+  const secret = process.env.TURNSTILE_SECRET_KEY ||
+    (process.env.NODE_ENV === 'development' ? TEST_SECRET : undefined)
+  if (!secret) throw new Error('TURNSTILE_SECRET_KEY is not configured')
+  if (process.env.NODE_ENV === 'production' && secret === TEST_SECRET) {
+    throw new Error('Production cannot use a Turnstile test secret')
+  }
+
+  const form = new URLSearchParams({ secret, response: token })
+  const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+    method: 'POST',
+    body: form,
+    signal: AbortSignal.timeout(5000),
+  })
+  if (!response.ok) throw new Error(`Turnstile verification returned ${response.status}`)
+  const result: { success?: boolean; action?: string } = await response.json()
+  return result.success === true && (secret === TEST_SECRET || result.action === 'contact')
+}
 
 export async function POST(req: NextRequest) {
-  const ip = req.headers.get('x-forwarded-for') ?? 'unknown'
-
   const body = await req.json().catch(() => ({}))
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    return Response.json({ errors: [{ field: 'body', message: 'Invalid request body' }] }, { status: 422 })
+  }
   const errors: { field: string; message: string }[] = []
 
   if (!body.name || typeof body.name !== 'string' || body.name.trim().length === 0) {
@@ -27,33 +48,23 @@ export async function POST(req: NextRequest) {
     errors.push({ field: 'message', message: 'Message must be 500 characters or fewer' })
   }
 
-  if (errors.length > 0) {
-    return Response.json({ errors }, { status: 422 })
+  if (errors.length > 0) return Response.json({ errors }, { status: 422 })
+
+  try {
+    if (!await verifyTurnstile(body.turnstileToken)) {
+      return Response.json({ error: 'verification_failed' }, { status: 403 })
+    }
+
+    const id = crypto.randomUUID()
+    await sendContactNotification({
+      name: body.name.trim(),
+      email: body.email.trim(),
+      message: body.message.trim(),
+      id,
+    })
+    return Response.json({ ok: true, id })
+  } catch (error) {
+    console.error('[contact] delivery failed:', error)
+    return Response.json({ error: 'delivery_failed' }, { status: 503 })
   }
-
-  const rl = checkRateLimit(ip, 3, 60 * 60 * 1000)
-  if (!rl.allowed) {
-    return Response.json({ error: 'rate_limit_exceeded', retryAfter: rl.retryAfter }, { status: 429 })
-  }
-
-  const id = Date.now().toString(36) + Math.random().toString(36).slice(2)
-  const submission: Omit<Submission, 'readAt' | 'deletedAt'> = {
-    id, name: body.name.trim(), email: body.email.trim(),
-    message: body.message.trim(), createdAt: new Date().toISOString(), ip,
-  }
-
-  insertSubmission(submission)
-
-  sendContactNotification({ name: submission.name, email: submission.email, message: submission.message, id }).catch(
-    (err) => console.error('[email] notification failed:', err)
-  )
-
-  return Response.json({ ok: true, id })
-}
-
-export async function GET(req: NextRequest) {
-  const authResult = await requireCfAccess(req)
-  if (authResult instanceof Response) return authResult
-  const submissions = getAllSubmissions()
-  return Response.json({ submissions })
 }

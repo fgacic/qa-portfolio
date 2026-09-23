@@ -5,6 +5,7 @@ test.describe('Contact form', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
     await page.getByTestId(testIds.sections.contact).scrollIntoViewIfNeeded()
+    await expect(page.getByTestId(testIds.contact.form)).toHaveAttribute('data-ready', 'true')
   })
 
   test('shows all three fields and submit button', async ({ page }) => {
@@ -37,7 +38,13 @@ test.describe('Contact form', () => {
     await page.getByTestId(testIds.contact.nameInput).fill('Test User')
     await page.getByTestId(testIds.contact.emailInput).fill('test@example.com')
     await page.getByTestId(testIds.contact.messageInput).fill('This is a test message that is long enough.')
+    await expect(page.locator('[name="cf-turnstile-response"]')).toHaveValue(/.+/, { timeout: 15000 })
     await page.getByTestId(testIds.contact.submit).click()
     await expect(page.getByTestId(testIds.contact.toast)).toContainText("I'll get back to you", { timeout: 5000 })
   })
+})
+
+test('contact page includes the email form', async ({ page }) => {
+  await page.goto('/contact')
+  await expect(page.getByTestId(testIds.contact.form)).toBeVisible()
 })

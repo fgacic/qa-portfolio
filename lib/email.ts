@@ -16,25 +16,19 @@ export async function sendContactNotification(params: {
   message: string
   id: string
 }) {
-  if (process.env.DISABLE_EMAIL === 'true') {
+  if (process.env.DISABLE_EMAIL === 'true' && process.env.NODE_ENV !== 'production') {
     console.warn('[email] DISABLE_EMAIL=true  -  skipping notification')
     return
   }
 
   const apiKey = process.env.RESEND_API_KEY
-  if (!apiKey) {
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error('RESEND_API_KEY is not set  -  contact notifications will not work')
-    }
-    console.warn('[email] RESEND_API_KEY is not set  -  emails will not be sent in dev')
-    return
-  }
+  if (!apiKey) throw new Error('RESEND_API_KEY is not configured')
 
   const resend = new Resend(apiKey)
   const safeName = sanitizeHeaderName(params.name) || 'Contact form'
 
   const { error } = await resend.emails.send({
-    from: `${safeName} via fgacic.com <${FROM_EMAIL}>`,
+    from: `fgacic.com <${FROM_EMAIL}>`,
     to: NOTIFY_EMAIL,
     replyTo: params.email,
     subject: `New contact from ${safeName}`,

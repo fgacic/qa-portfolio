@@ -1,11 +1,21 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Script from 'next/script'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import isEmail from 'validator/lib/isEmail'
 import { testIds } from '@/lib/testids'
 
-type Status = 'idle' | 'submitting' | 'success' | 'rateLimit' | 'error'
+type Status = 'idle' | 'submitting' | 'success' | 'verification' | 'error'
+const TEST_SITE_KEY = '1x00000000000000000000AA'
+const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ||
+  (process.env.NODE_ENV === 'development' ? TEST_SITE_KEY : '')
+const usableSiteKey = process.env.NODE_ENV === 'production' && siteKey === TEST_SITE_KEY ? '' : siteKey
+
+function resetTurnstile() {
+  const turnstile = (window as Window & { turnstile?: { reset: () => void } }).turnstile
+  turnstile?.reset()
+}
 
 function validateFields(fields: { name: string; email: string; message: string }) {
   const errors: Record<string, string> = {}
@@ -52,11 +62,14 @@ const inputStyle: React.CSSProperties = {
 }
 
 export default function ContactForm() {
+  const [hydrated, setHydrated] = useState(false)
   const [fields, setFields] = useState({ name: '', email: '', message: '' })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [status, setStatus] = useState<Status>('idle')
   const [toastVisible, setToastVisible] = useState(false)
   const reduced = useReducedMotion()
+
+  useEffect(() => setHydrated(true), [])
 
   useEffect(() => {
     if (status !== 'success') return
@@ -106,11 +119,18 @@ export default function ContactForm() {
     setStatus('submitting')
     setErrors({})
 
+    const form = e.currentTarget as HTMLFormElement
+    const turnstileToken = new FormData(form).get('cf-turnstile-response')
+    if (!turnstileToken) {
+      setStatus('verification')
+      return
+    }
+
     try {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(fields),
+        body: JSON.stringify({ ...fields, turnstileToken }),
       })
 
       if (res.ok) {
@@ -125,13 +145,15 @@ export default function ContactForm() {
         }
         setErrors(fieldErrors)
         setStatus('idle')
-      } else if (res.status === 429) {
-        setStatus('rateLimit')
+      } else if (res.status === 403) {
+        setStatus('verification')
       } else {
         setStatus('error')
       }
     } catch {
       setStatus('error')
+    } finally {
+      resetTurnstile()
     }
   }
 
@@ -247,9 +269,9 @@ export default function ContactForm() {
             Have a project in mind or want to talk QA? Send me a message.
           </p>
 
-          {status === 'rateLimit' && (
+          {status === 'verification' && (
             <div
-              data-testid={testIds.contact.rateLimitBanner}
+              data-testid={testIds.contact.verificationBanner}
               style={{
                 padding: '1rem 1.25rem',
                 borderRadius: '0.75rem',
@@ -260,7 +282,7 @@ export default function ContactForm() {
                 marginBottom: '1.5rem',
               }}
             >
-              Too many messages. Try again in an hour.
+              Verification expired or failed. Please try again.
             </div>
           )}
 
@@ -285,6 +307,7 @@ export default function ContactForm() {
             onSubmit={handleSubmit}
             noValidate
             data-testid={testIds.contact.form}
+            data-ready={hydrated}
             style={{
               display: 'flex',
               flexDirection: 'column',
@@ -425,11 +448,25 @@ export default function ContactForm() {
             </div>
 
             {/* Submit */}
+            {usableSiteKey ? (
+              <>
+                <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="afterInteractive" />
+                <div
+                  className="cf-turnstile"
+                  data-sitekey={usableSiteKey}
+                  data-action="contact"
+                  data-theme="dark"
+                  data-testid={testIds.contact.turnstile}
+                />
+              </>
+            ) : (
+              <p role="alert">Contact form is temporarily unavailable.</p>
+            )}
             <div>
               <button
                 type="submit"
                 data-testid={testIds.contact.submit}
-                disabled={status === 'submitting'}
+                disabled={status === 'submitting' || !usableSiteKey}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
