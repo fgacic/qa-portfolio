@@ -63,7 +63,7 @@ test.describe('Visual  -  contact form', () => {
     await page.getByTestId(testIds.contact.nameInput).fill('Ada Lovelace')
     await page.getByTestId(testIds.contact.emailInput).fill('ada@example.com')
     await page.getByTestId(testIds.contact.messageInput).fill('Great visual regression coverage on this site.')
-    await page.locator('[name="cf-turnstile-response"]').waitFor()
+    await page.locator('[name="cf-turnstile-response"]').waitFor({ state: 'attached' })
     await page.waitForFunction(() => Boolean((document.querySelector('[name="cf-turnstile-response"]') as HTMLInputElement | null)?.value))
     await page.getByTestId(testIds.contact.submit).click()
     await page.getByTestId(testIds.contact.toast).waitFor()
