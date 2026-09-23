@@ -14,12 +14,6 @@ function resolveGitBranch(): string {
 }
 
 const config: NextConfig = {
-  output: 'standalone',
-  experimental: {
-    optimizeCss: true,
-  },
-  eslint: { ignoreDuringBuilds: true },
-  typescript: { ignoreBuildErrors: true },
   env: {
     GIT_BRANCH: resolveGitBranch(),
   },

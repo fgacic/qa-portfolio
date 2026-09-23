@@ -4,17 +4,13 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "next dev",
-    "build": "next build && cp -r .next/static/. .next/standalone/.next/static/ && cp -r public/. .next/standalone/public/",
-    "start": "node .next/standalone/server.js",
-    "start:test": "DISABLE_EMAIL=true node .next/standalone/server.js",
-    "lint": "next lint",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
     "test":"playwright test",
     "playwright:test": "playwright test --config=tests/playwright.config.ts",
     "playwright:report": "playwright show-report playwright-report",
-    "playwright:visual": "playwright test --config=tests/visual.config.ts",
-    "docker:build": "podman build -t fgacic:local .",
-    "docker:run": "podman run --rm -p 3000:3000 -v fgacic-data:/app/data --name fgacic fgacic:local",
-    "docker:stop": "podman rm -f fgacic"
+    "playwright:visual": "playwright test --config=tests/visual.config.ts"
   },
   "browserslist": [
     "Chrome >= 100",
@@ -25,8 +21,6 @@
   ],
   "dependencies": {
     "@react-email/components": "^1.0.12",
-    "better-sqlite3": "^12.10.0",
-    "jose": "^6.2.3",
     "maplibre-gl": "^5.24.0",
     "motion": "^11.0.0",
     "next": "^15.0.0",
@@ -42,12 +36,10 @@
     "@playwright/test": "^1.45.0",
     "@react-email/ui": "6.3.2",
     "@tailwindcss/postcss": "^4.0.0",
-    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^20.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@types/validator": "^13.15.10",
-    "critters": "^0.0.25",
     "eslint": "^9.0.0",
     "eslint-config-next": "^15.0.0",
     "tailwindcss": "^4.0.0",

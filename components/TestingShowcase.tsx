@@ -42,7 +42,7 @@ const TESTS = [
     tool: 'k6',
     accent: '#38bdf8',
     description:
-      'Smoke tests (5 VUs) gate every deployment. Load scenarios (100 VUs, 2 min) validate p95 latency stays under 1s under realistic traffic.',
+      'Smoke tests (5 VUs) run in CI. Load scenarios (100 VUs, 2 min) validate p95 latency under realistic traffic.',
     snippet: `export const options = { vus: 5, duration: '30s' }
 
 export default function () {
@@ -118,8 +118,7 @@ export default function TestingShowcase() {
           transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
           style={{ marginBottom: '2.5rem' }}
         >
-          Four test suites live in the same repo as this site and run on every push.
-          The CI pipeline gates deployment, meaning no green tests, no deploy.
+          Four test suites live in the same repo as this site. CI runs on pull requests and pushes to main.
         </motion.p>
 
         <div
@@ -200,7 +199,7 @@ export default function TestingShowcase() {
                     flexShrink: 0,
                   }}
                 >
-                  ● passing
+                  ● CI runs
                 </a>
               </div>
 

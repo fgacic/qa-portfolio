@@ -25,19 +25,6 @@ export default function () {
     })
   }
 
-  // POST /api/contact  -  429 is expected under rate-limiting; mark it as non-failure
-  const contactRes = http.post(
-    `${BASE_URL}/api/contact`,
-    JSON.stringify({ name: 'k6', email: 'k6@test.com', message: 'Load test message for smoke run.' }),
-    {
-      headers: { 'Content-Type': 'application/json' },
-      responseCallback: http.expectedStatuses(200, 429),
-    }
-  )
-  check(contactRes, {
-    'POST /api/contact 200 or 429': (r) => r.status === 200 || r.status === 429,
-  })
-
   // GET /api/projects
   const projRes = http.get(`${BASE_URL}/api/projects`)
   check(projRes, {

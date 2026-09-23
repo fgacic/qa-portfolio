@@ -24,7 +24,8 @@ export const testIds = {
     messageError: 'contact-message-error',
     charCount: 'contact-char-count',
     toast: 'contact-toast',
-    rateLimitBanner: 'contact-rate-limit-banner',
+    verificationBanner: 'contact-verification-banner',
+    turnstile: 'contact-turnstile',
     errorBanner: 'contact-error-banner',
   },
 } as const

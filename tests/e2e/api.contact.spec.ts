@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-const VALID = { name: 'Test User', email: 'test@example.com', message: 'This is a test message for the contact form.' }
+const VALID = { name: 'Test User', email: 'test@example.com', message: 'This is a test message for the contact form.', turnstileToken: 'XXXX.DUMMY.TOKEN.XXXX' }
 
 test.describe('API  -  POST /api/contact', () => {
   test('returns 200 with valid body', async ({ request }) => {
@@ -43,17 +43,13 @@ test.describe('API  -  POST /api/contact', () => {
     expect(body.errors[0]).toHaveProperty('message')
   })
 
-  test('returns 429 after exceeding rate limit', async ({ request }) => {
-    // Use a dedicated IP isolated from the project IP so this test's exhaustion
-    // does not affect other tests (which use the per-project X-Forwarded-For header).
-    const rlHeaders = { 'X-Forwarded-For': '10.99.0.1' }
-    for (let i = 0; i < 3; i++) {
-      await request.post('/api/contact', { data: { ...VALID, message: `Rate limit test attempt ${i} - enough chars` }, headers: rlHeaders })
-    }
-    const res = await request.post('/api/contact', { data: { ...VALID, message: 'This should be rate limited now.' }, headers: rlHeaders })
-    expect(res.status()).toBe(429)
-    const body = await res.json()
-    expect(body.error).toBe('rate_limit_exceeded')
-    expect(typeof body.retryAfter).toBe('number')
+  test('rejects missing verification', async ({ request }) => {
+    const res = await request.post('/api/contact', { data: { ...VALID, turnstileToken: '' } })
+    expect(res.status()).toBe(403)
+  })
+
+  test('does not expose submissions through GET', async ({ request }) => {
+    const res = await request.get('/api/contact')
+    expect(res.status()).toBe(405)
   })
 })

@@ -11,6 +11,8 @@ async function gotoHome(page: Page) {
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.goto('/')
   await page.getByTestId(testIds.sections.contact).scrollIntoViewIfNeeded()
+  await page.getByTestId(testIds.contact.form).waitFor()
+  await page.waitForFunction(() => document.querySelector('[data-testid="contact-form"]')?.getAttribute('data-ready') === 'true')
   await page.evaluate(() => document.fonts.ready)
   await page.evaluate(() => window.scrollTo(0, 0))
 }
@@ -50,7 +52,7 @@ test.describe('Visual  -  contact form', () => {
   })
 
   test('message sent toast', async ({ page }) => {
-    // Mock the POST so CI never writes to SQLite or burns the rate limit.
+    // Mock the POST so visual tests do not send email.
     await page.route('**/api/contact', route => {
       if (route.request().method() === 'POST') {
         return route.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' })
@@ -61,6 +63,8 @@ test.describe('Visual  -  contact form', () => {
     await page.getByTestId(testIds.contact.nameInput).fill('Ada Lovelace')
     await page.getByTestId(testIds.contact.emailInput).fill('ada@example.com')
     await page.getByTestId(testIds.contact.messageInput).fill('Great visual regression coverage on this site.')
+    await page.locator('[name="cf-turnstile-response"]').waitFor({ state: 'attached' })
+    await page.waitForFunction(() => Boolean((document.querySelector('[name="cf-turnstile-response"]') as HTMLInputElement | null)?.value))
     await page.getByTestId(testIds.contact.submit).click()
     await page.getByTestId(testIds.contact.toast).waitFor()
     // Let the toast's entrance (check-draw + ripple) settle before capture.
