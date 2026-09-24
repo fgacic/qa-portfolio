@@ -48,3 +48,14 @@ test('contact page includes the email form', async ({ page }) => {
   await page.goto('/contact')
   await expect(page.getByTestId(testIds.contact.form)).toBeVisible()
 })
+
+test('Turnstile renders after navigating from the contact page to the homepage', async ({ page }) => {
+  await page.goto('/contact')
+  await expect(page.locator('[name="cf-turnstile-response"]')).toHaveValue(/.+/, { timeout: 15000 })
+
+  await page.getByRole('link', { name: 'Back to portfolio' }).click()
+  await expect(page).toHaveURL('/')
+  await page.getByTestId(testIds.sections.contact).scrollIntoViewIfNeeded()
+  await expect(page.locator('[name="cf-turnstile-response"]')).toHaveCount(1)
+  await expect(page.locator('[name="cf-turnstile-response"]')).toHaveValue(/.+/, { timeout: 15000 })
+})
