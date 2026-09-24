@@ -13,12 +13,13 @@ yarn dev
 
 The contact form uses Cloudflare Turnstile public test keys in development. To test without sending email, set `DISABLE_EMAIL=true` locally. For real delivery, set `RESEND_API_KEY` and verify `fgacic.com` in Resend. Copy `.env.example` to `.env.local` for the variable list. Do not commit credentials.
 
-## Vercel Hobby setup
+## Production hosting
 
-1. Import `fgacic/qa-portfolio` into the Vercel Hobby workspace. Use the Next.js framework preset, repository root, and Yarn Classic. Vercel deploys the connected branch without a Docker image or Coolify trigger.
-2. In Vercel's Production environment variables, set `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, and `RESEND_API_KEY`. The sender defaults to `contact@fgacic.com`, and notifications go to `filip.gacic98@gmail.com`; use `FROM_EMAIL` and `NOTIFY_EMAIL` only to override those defaults. Use real Turnstile keys. Register the Vercel production hostname and `fgacic.com` in the Turnstile widget. Verify the sending domain in Resend and keep its DNS records in Cloudflare.
-3. Test the production Vercel URL before DNS cutover, including a real contact submission and receipt in the inbox. Confirm `/admin` and `GET /api/contact` no longer reveal submissions.
-4. After the Vercel URL is verified, attach `fgacic.com` and `www.fgacic.com` in Vercel, then update only the website DNS records in Cloudflare to Vercel's instructions. Keep mail, Coolify, and other DNS records intact. The existing production SQLite database is empty, so remove its storage and the old Coolify application after the domain and contact delivery work on Vercel.
+The portfolio runs on Vercel Hobby at [www.fgacic.com](https://www.fgacic.com). `fgacic.com` redirects there. Vercel deploys `main` through its GitHub integration using the Next.js preset and Yarn Classic. The former Coolify portfolio application and its SQLite storage have been removed.
+
+Cloudflare manages DNS and Turnstile. The website CNAME records for `fgacic.com` and `www.fgacic.com` point to the target shown in Vercel's Domains settings with Cloudflare proxying disabled. Keep the mail and unrelated application records intact when changing website DNS. The Turnstile widget allows both custom domains and the Vercel production hostname.
+
+Set `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, and `RESEND_API_KEY` in Vercel's **Production** environment. The sender defaults to `contact@fgacic.com`, and notifications go to `filip.gacic98@gmail.com`; use `FROM_EMAIL` and `NOTIFY_EMAIL` only to override those defaults. The sending domain must remain verified in Resend. Redeploy after changing an environment variable.
 
 The contact endpoint stores no submissions. It validates fields, verifies Turnstile on the server, awaits Resend, and returns success only after Resend accepts the message. Delivery failure returns 503 so the visitor can retry. `DISABLE_EMAIL` is ignored in production.
 
