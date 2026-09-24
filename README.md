@@ -1,28 +1,18 @@
-# fgacic.com — QA Engineer Portfolio
+# Filip Gačić | QA Engineer
 
-Next.js 15 portfolio with Playwright browser/API tests, Percy visual snapshots, and k6 smoke/load tests.
+I'm a QA Engineer with 5+ years of experience building automated checks for web products. This repository contains the source for my portfolio and the test suites I use to exercise it.
 
-## Local development
+**[Explore the live portfolio](https://www.fgacic.com)** · [Selected work](https://www.fgacic.com/#work) · [Testing showcase](https://www.fgacic.com/#testing)
 
-Requires Node 20 and Yarn Classic.
+## QA work in this repository
 
-```bash
-yarn install --frozen-lockfile
-yarn dev
-```
+| Area | What I demonstrate | Evidence |
+| --- | --- | --- |
+| Browser testing | Playwright checks for navigation, forms, keyboard access, and behavior across Chromium, Firefox, and a mobile viewport. | [End-to-end tests](tests/e2e) |
+| API testing | Request-level checks for successful responses, validation errors, and response structure across the site's API routes. | [API tests](tests/e2e/api.contact.spec.ts) |
+| Visual regression | Percy snapshots of the full page, individual sections, and contact form states, with motion and fonts stabilized for repeatable comparisons. | [Visual tests](tests/visual/home.spec.ts) |
+| Performance | k6 smoke checks in CI and a separate load scenario with latency and error-rate thresholds. | [k6 scenarios](k6) |
 
-For local contact form setup, copy `.env.example` to `.env.local`. Keep credentials out of Git.
+GitHub Actions runs lint, build, browser and API tests, and k6 on pull requests and pushes to `main`. Percy snapshots run when configured. Reports are saved as workflow artifacts. [View the CI workflow](.github/workflows/ci.yml).
 
-## Tests
-
-```bash
-yarn lint
-yarn build
-# With a local dev server running and local test configuration:
-yarn playwright:test
-k6 run k6/smoke.js --env BASE_URL=http://localhost:3000
-```
-
-To upload visual snapshots, set `PERCY_TOKEN` in your shell and run `npx percy exec -- yarn playwright:visual` with the local server running. The visual suite requires a running Percy CLI.
-
-GitHub Actions runs lint, build, Playwright, optional Percy, and k6 on pull requests and pushes to `main`. Test reports are workflow artifacts.
+The site is built with Next.js, React, and TypeScript. For my experience, projects, and approach to QA, [visit the portfolio](https://www.fgacic.com). To discuss QA work, [get in touch](https://www.fgacic.com/#contact).
