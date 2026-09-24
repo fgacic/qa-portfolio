@@ -39,7 +39,7 @@ jobs:
         env:
           BASE_URL: http://localhost:3000
       - name: Run Percy snapshots
-        if: env.PERCY_TOKEN != ''
+        if: ${{ !cancelled() && env.PERCY_TOKEN != '' }}
         run: npx percy exec -- yarn playwright:visual
         env:
           BASE_URL: http://localhost:3000
