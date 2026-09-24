@@ -2,11 +2,39 @@
 
 import { motion, useReducedMotion } from 'motion/react'
 
-const STEPS = [
+const STEPS: {
+  verb: string
+  tool: string
+  href: string
+  linkLabel: string
+  secondaryHref?: string
+  secondaryLinkLabel?: string
+  body: string
+  accent: string
+}[] = [
+  {
+    verb: 'Research',
+    tool: 'Codex',
+    href: 'https://openai.com/codex/',
+    linkLabel: 'Explore Codex',
+    body: 'Explore the codebase, connect ticket context to the implementation, and compare solution options. I review the findings and own the final decisions.',
+    accent: '#a78bfa',
+  },
+  {
+    verb: 'Gather context',
+    tool: 'Azure DevOps MCP + Jira MCP',
+    href: 'https://learn.microsoft.com/en-us/azure/devops/mcp-server/mcp-server-overview?view=azure-devops',
+    linkLabel: 'Azure DevOps MCP',
+    secondaryHref: 'https://atlassian.github.io/atlassian-mcp-server/',
+    secondaryLinkLabel: 'Jira MCP',
+    body: 'Pull requirements, acceptance criteria, comments, history, and linked work into one view. Faster context gathering supports investigation, solution planning, and routine ticket administration.',
+    accent: '#f59e0b',
+  },
   {
     verb: 'Generate',
     tool: 'Playwright MCP',
     href: 'https://github.com/microsoft/playwright-mcp',
+    linkLabel: 'Playwright MCP',
     body: 'Draft Playwright specs and ticket scaffolding straight from intent. I then own, prune, and harden every line.',
     accent: '#ec4899',
   },
@@ -14,6 +42,7 @@ const STEPS = [
     verb: 'Run',
     tool: 'Playwright CLI',
     href: 'https://playwright.dev/docs/test-cli',
+    linkLabel: 'Playwright CLI',
     body: 'Execute the suite locally and in CI, with sharding, retries, traces, and a shareable HTML report on every run.',
     accent: '#34d399',
   },
@@ -21,6 +50,7 @@ const STEPS = [
     verb: 'Review',
     tool: 'Claude Code (CLI)',
     href: 'https://claude.com/claude-code',
+    linkLabel: 'Claude Code',
     body: 'A first-pass review on every change before mine, catching the obvious before it reaches a human reviewer.',
     accent: '#22d3ee',
   },
@@ -28,6 +58,7 @@ const STEPS = [
     verb: 'Investigate',
     tool: 'Chrome DevTools MCP',
     href: 'https://github.com/ChromeDevTools/chrome-devtools-mcp',
+    linkLabel: 'Chrome DevTools MCP',
     body: 'Drive a real browser to reproduce a failure, walk the DOM and network, and pin down the root cause.',
     accent: '#06b6d4',
   },
@@ -90,8 +121,8 @@ export default function AIWorkflow() {
         >
           I treat frontier AI tooling the way I treat any test infrastructure:
           leverage, with a human owning the verdict. It sits inside my daily QA loop,
-          not around it: generating coverage, reviewing every change, and chasing down
-          failures faster than I could alone.
+          not around it: gathering ticket context, exploring solutions, generating
+          coverage, reviewing changes, and chasing down failures faster.
         </motion.p>
 
         <div
@@ -103,11 +134,8 @@ export default function AIWorkflow() {
           }}
         >
           {STEPS.map((step, i) => (
-            <motion.a
+            <motion.div
               key={step.verb}
-              href={step.href}
-              target="_blank"
-              rel="noopener noreferrer"
               custom={i}
               variants={stepVariants}
               initial={reduced ? 'visible' : 'hidden'}
@@ -120,7 +148,6 @@ export default function AIWorkflow() {
                 borderRadius: '0.75rem',
                 border: '1px solid rgba(255,255,255,0.07)',
                 background: 'rgba(255,255,255,0.03)',
-                textDecoration: 'none',
                 color: 'inherit',
               }}
             >
@@ -171,7 +198,27 @@ export default function AIWorkflow() {
               >
                 {step.body}
               </div>
-            </motion.a>
+              <div style={{ display: 'flex', gap: '0.85rem', marginTop: '1rem', flexWrap: 'wrap' }}>
+                <a
+                  href={step.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ fontSize: '0.78rem', color: step.accent, textDecoration: 'none' }}
+                >
+                  {step.linkLabel} ↗
+                </a>
+                {step.secondaryHref && (
+                  <a
+                    href={step.secondaryHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ fontSize: '0.78rem', color: step.accent, textDecoration: 'none' }}
+                  >
+                    {step.secondaryLinkLabel} ↗
+                  </a>
+                )}
+              </div>
+            </motion.div>
           ))}
         </div>
 
