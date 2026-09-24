@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Script from 'next/script'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import isEmail from 'validator/lib/isEmail'
@@ -12,9 +12,14 @@ const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ||
   (process.env.NODE_ENV === 'development' ? TEST_SITE_KEY : '')
 const usableSiteKey = process.env.NODE_ENV === 'production' && siteKey === TEST_SITE_KEY ? '' : siteKey
 
-function resetTurnstile() {
-  const turnstile = (window as Window & { turnstile?: { reset: () => void } }).turnstile
-  turnstile?.reset()
+type Turnstile = {
+  render: (container: HTMLElement, options: { sitekey: string; action: string; theme: string }) => string
+  reset: (widgetId: string) => void
+  remove: (widgetId: string) => void
+}
+
+function getTurnstile() {
+  return (window as Window & { turnstile?: Turnstile }).turnstile
 }
 
 function validateFields(fields: { name: string; email: string; message: string }) {
@@ -67,9 +72,30 @@ export default function ContactForm() {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [status, setStatus] = useState<Status>('idle')
   const [toastVisible, setToastVisible] = useState(false)
+  const [turnstileReady, setTurnstileReady] = useState(false)
+  const turnstileContainer = useRef<HTMLDivElement>(null)
+  const turnstileWidgetId = useRef<string | null>(null)
   const reduced = useReducedMotion()
 
   useEffect(() => setHydrated(true), [])
+
+  useEffect(() => {
+    if (!turnstileReady || !usableSiteKey || !turnstileContainer.current) return
+    const turnstile = getTurnstile()
+    if (!turnstile) return
+
+    const widgetId = turnstile.render(turnstileContainer.current, {
+      sitekey: usableSiteKey,
+      action: 'contact',
+      theme: 'dark',
+    })
+    turnstileWidgetId.current = widgetId
+
+    return () => {
+      turnstileWidgetId.current = null
+      turnstile.remove(widgetId)
+    }
+  }, [turnstileReady])
 
   useEffect(() => {
     if (status !== 'success') return
@@ -153,7 +179,7 @@ export default function ContactForm() {
     } catch {
       setStatus('error')
     } finally {
-      resetTurnstile()
+      if (turnstileWidgetId.current) getTurnstile()?.reset(turnstileWidgetId.current)
     }
   }
 
@@ -450,12 +476,13 @@ export default function ContactForm() {
             {/* Submit */}
             {usableSiteKey ? (
               <>
-                <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="afterInteractive" />
+                <Script
+                  src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+                  strategy="afterInteractive"
+                  onReady={() => setTurnstileReady(true)}
+                />
                 <div
-                  className="cf-turnstile"
-                  data-sitekey={usableSiteKey}
-                  data-action="contact"
-                  data-theme="dark"
+                  ref={turnstileContainer}
                   data-testid={testIds.contact.turnstile}
                 />
               </>
