@@ -60,7 +60,8 @@ body {
 
 .screen {
   min-height: 100vh;
-  min-height: 100dvh;
+  /* Keep the centered hero steady when mobile browser bars expand or collapse. */
+  min-height: 100svh;
   display: flex;
   align-items: center;
   justify-content: center;
