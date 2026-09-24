@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Script from 'next/script'
 import { DM_Sans } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { SITE_URL } from '@/lib/links'
@@ -43,6 +44,16 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={dmSans.variable}>
+      <Script id="reset-scroll-on-reload" strategy="beforeInteractive">
+        {`(() => {
+          const navigation = performance.getEntriesByType('navigation')[0];
+          if (navigation?.type !== 'reload') return;
+
+          if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+          if (location.hash) history.replaceState(history.state, '', location.pathname + location.search);
+          window.scrollTo(0, 0);
+        })();`}
+      </Script>
       <body>
         {children}
         <Analytics />
