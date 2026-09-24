@@ -21,6 +21,7 @@
   ],
   "dependencies": {
     "@react-email/components": "^1.0.12",
+    "@vercel/analytics": "^2.0.1",
     "maplibre-gl": "^5.24.0",
     "motion": "^11.0.0",
     "next": "^15.0.0",
