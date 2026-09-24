@@ -4,6 +4,12 @@ import { testIds } from '@/lib/testids'
 
 const sel = (id: string) => `[data-testid="${id}"]`
 
+test.beforeAll(() => {
+  if (!process.env.PERCY_SERVER_ADDRESS) {
+    throw new Error('Percy is not running. Run visual tests with `percy exec -- yarn playwright:visual`.')
+  }
+})
+
 // Load the homepage in a deterministic, animation-free state:
 // reduced motion disables scroll-reveal (sections render in their final state)
 // and we let fonts settle so text metrics don't shift between runs.
