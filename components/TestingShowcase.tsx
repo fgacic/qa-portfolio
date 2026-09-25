@@ -19,6 +19,7 @@ const TESTS = [
 })`,
     badgeUrl: CI_WORKFLOW,
     reportUrl: PLAYWRIGHT_REPORT_URL,
+    reportLabel: 'View latest Playwright report →',
   },
   {
     id: 'api',
@@ -35,6 +36,7 @@ const TESTS = [
 })`,
     badgeUrl: CI_WORKFLOW,
     reportUrl: PLAYWRIGHT_REPORT_URL,
+    reportLabel: 'View latest Playwright report →',
   },
   {
     id: 'load',

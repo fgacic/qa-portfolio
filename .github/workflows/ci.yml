@@ -13,6 +13,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    outputs:
+      playwright_pages_ready: ${{ steps.upload_playwright_pages.outcome == 'success' }}
     env:
       NEXT_PUBLIC_TURNSTILE_SITE_KEY: 1x00000000000000000000AA
       TURNSTILE_SECRET_KEY: 1x0000000000000000000000000000000AA
@@ -38,6 +40,12 @@ jobs:
         run: yarn playwright:test
         env:
           BASE_URL: http://localhost:3000
+      - name: Upload Playwright report for GitHub Pages
+        id: upload_playwright_pages
+        if: ${{ always() && github.event_name == 'push' && github.ref == 'refs/heads/main' && hashFiles('playwright-report/index.html') != '' }}
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: playwright-report/
       - name: Run Percy snapshots
         if: ${{ !cancelled() && env.PERCY_TOKEN != '' }}
         run: |
@@ -61,3 +69,18 @@ jobs:
             k6-report.html
             /tmp/next.log
           if-no-files-found: ignore
+
+  deploy-playwright-report:
+    needs: test
+    if: ${{ always() && needs.test.outputs.playwright_pages_ready == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy Playwright report to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
