@@ -23,6 +23,15 @@ async function gotoHome(page: Page) {
   await page.evaluate(() => window.scrollTo(0, 0))
 }
 
+// Let page scripts run in Playwright (including Turnstile for form submission),
+// then strip them from the static DOM Percy renders. Scripts in the captured
+// DOM cause Firefox render timeouts at tablet and desktop widths.
+async function removeScriptsForPercy(page: Page) {
+  await page.evaluate(() => {
+    document.querySelectorAll('script').forEach(script => script.remove())
+  })
+}
+
 // Per-section snapshots isolate a regression to the section that changed,
 // instead of flipping one giant full-page diff. Grouped under one Percy
 // test case so the dashboard reads like a spec.
@@ -37,6 +46,7 @@ const SECTIONS = [
 test.describe('Visual  -  homepage', () => {
   test('full page and sections', async ({ page }) => {
     await gotoHome(page)
+    await removeScriptsForPercy(page)
     await percySnapshot(page, 'Home / Full page', { testCase: 'Homepage' })
     for (const [name, id] of SECTIONS) {
       await percySnapshot(page, `Home / ${name}`, { scope: sel(id), testCase: 'Homepage' })
@@ -51,6 +61,7 @@ test.describe('Visual  -  contact form', () => {
     // no network involved, so it is fully deterministic.
     await page.getByTestId(testIds.contact.submit).click()
     await page.getByTestId(testIds.contact.messageError).waitFor()
+    await removeScriptsForPercy(page)
     await percySnapshot(page, 'Contact / Validation errors', {
       scope: sel(testIds.sections.contact),
       testCase: 'Contact form',
@@ -75,6 +86,7 @@ test.describe('Visual  -  contact form', () => {
     await page.getByTestId(testIds.contact.toast).waitFor()
     // Let the toast's entrance (check-draw + ripple) settle before capture.
     await page.waitForTimeout(1500)
+    await removeScriptsForPercy(page)
     await percySnapshot(page, 'Contact / Message sent', {
       testCase: 'Contact form',
       // Pin the 5s countdown bar (JS-driven, not covered by the global
