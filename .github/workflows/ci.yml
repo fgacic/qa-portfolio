@@ -40,9 +40,12 @@ jobs:
           BASE_URL: http://localhost:3000
       - name: Run Percy snapshots
         if: ${{ !cancelled() && env.PERCY_TOKEN != '' }}
-        run: npx percy exec -- yarn playwright:visual
+        run: |
+          npx percy exec -- yarn playwright:visual
+          npx percy build:wait --project cade7b74/fgacic.com-27688392 --commit "$PERCY_COMMIT" --timeout 900000
         env:
           BASE_URL: http://localhost:3000
+          PERCY_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: grafana/setup-k6-action@v1
       - name: Run k6 smoke test
         run: k6 run k6/smoke.js
